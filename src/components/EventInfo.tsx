@@ -28,10 +28,7 @@ const EventInfo = ({ event }: IProps) => {
               <MeetingRoomIcon />
             </Avatar>
           </ListItemAvatar>
-          <ListItemText
-            primary="Nombre de reunión"
-            secondary={event.description}
-          />
+          <ListItemText primary="Nombre de reunión" secondary={event.meeting} />
         </ListItem>
         <ListItem>
           <ListItemAvatar>
@@ -39,7 +36,7 @@ const EventInfo = ({ event }: IProps) => {
               <AccountCircleIcon />
             </Avatar>
           </ListItemAvatar>
-          <ListItemText primary="Responsable" secondary={event.pleople} />
+          <ListItemText primary="Responsable" secondary={event.people} />
         </ListItem>
       </List>
     </>

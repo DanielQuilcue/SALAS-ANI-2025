@@ -8,7 +8,7 @@ import {
   CardHeader,
   Container,
   Divider,
-  Typography
+  Typography,
 } from "@mui/material";
 
 import {
@@ -36,6 +36,7 @@ import moment from "moment";
 // import { Today } from "@mui/icons-material";
 
 import "moment-timezone"; // or 'moment-timezone/builds/moment-timezone-with-data[-datarange].js'. See their docs
+import Menu from "../components/Menu/Menu";
 
 moment.tz.setDefault("America/New_York");
 
@@ -211,27 +212,10 @@ const Bienestar = () => {
     >
       <Container maxWidth={false}>
         <Card>
-          {/* <CardHeader title="AUDITORIO" subheader="Texto motivacional" /> */}
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex', mx: 2, marginLeft: 20},
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-              BIENESTAR
-              </Typography>
-
-          <Divider />
+          <CardHeader title="Bienestar" />
+          {/* <Menu /> */}
           <CardContent>
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            {/* <Box sx={{ display: "flex", justifyContent: "space-between" }}>
               <ButtonGroup
                 size="large"
                 variant="contained"
@@ -253,8 +237,7 @@ const Bienestar = () => {
                   Crear Categoria{" "}
                 </Button>
               </ButtonGroup>
-            </Box>
-            <Divider style={{ margin: 10 }} />
+            </Box> */}
             <AddEventModal
               open={openSlot}
               handleClose={handleClose}

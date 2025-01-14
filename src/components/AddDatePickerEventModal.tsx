@@ -1,4 +1,9 @@
-import React, { Dispatch, MouseEvent, SetStateAction, ChangeEvent } from "react"
+import React, {
+  Dispatch,
+  MouseEvent,
+  SetStateAction,
+  ChangeEvent,
+} from "react";
 import {
   TextField,
   Dialog,
@@ -11,18 +16,18 @@ import {
   Box,
   Checkbox,
   Typography,
-} from "@mui/material"
-import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers"
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
-import { DatePickerEventFormData, ITodo } from "./EventCalendar"
+} from "@mui/material";
+import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { DatePickerEventFormData, ITodo } from "./EventCalendar";
 
 interface IProps {
-  open: boolean
-  handleClose: Dispatch<SetStateAction<void>>
-  datePickerEventFormData: DatePickerEventFormData
-  setDatePickerEventFormData: Dispatch<SetStateAction<DatePickerEventFormData>>
-  onAddEvent: (e: MouseEvent<HTMLButtonElement>) => void
-  todos: ITodo[]
+  open: boolean;
+  handleClose: Dispatch<SetStateAction<void>>;
+  datePickerEventFormData: DatePickerEventFormData;
+  setDatePickerEventFormData: Dispatch<SetStateAction<DatePickerEventFormData>>;
+  onAddEvent: (e: MouseEvent<HTMLButtonElement>) => void;
+  todos: ITodo[];
 }
 
 const AddDatePickerEventModal = ({
@@ -33,57 +38,59 @@ const AddDatePickerEventModal = ({
   onAddEvent,
   todos,
 }: IProps) => {
-  const { description, start, end, allDay } = datePickerEventFormData
+  const { meeting, start, end, allDay } = datePickerEventFormData;
 
   const onClose = () => {
-    handleClose()
-  }
+    handleClose();
+  };
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     setDatePickerEventFormData((prevState) => ({
       ...prevState,
       [event.target.name]: event.target.value,
-    }))
-  }
+    }));
+  };
 
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     setDatePickerEventFormData((prevState) => ({
       ...prevState,
       allDay: event.target.checked,
-    }))
-  }
+    }));
+  };
 
   const handleTodoChange = (e: React.SyntheticEvent, value: ITodo | null) => {
     setDatePickerEventFormData((prevState) => ({
       ...prevState,
       todoId: value?._id,
-    }))
-  }
+    }));
+  };
 
   const isDisabled = () => {
     const checkend = () => {
       if (!allDay && end === null) {
-        return true
+        return true;
       }
+    };
+    if (meeting === "" || start === null || checkend()) {
+      return true;
     }
-    if (description === "" || start === null || checkend()) {
-      return true
-    }
-    return false
-  }
+    return false;
+  };
 
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Add event</DialogTitle>
       <DialogContent>
-        <DialogContentText>To add a event, please fill in the information below.</DialogContentText>
+        <DialogContentText>
+          To add a event, please fill in the information below.
+        </DialogContentText>
         <Box component="form">
           <TextField
-            name="description"
-            value={description}
+            name="meeting"
+            value={meeting}
             margin="dense"
-            id="description"
-            label="Description"
+            id="meeting"
+            label="meeting"
             type="text"
             fullWidth
             variant="outlined"
@@ -149,7 +156,7 @@ const AddDatePickerEventModal = ({
         </Button>
       </DialogActions>
     </Dialog>
-  )
-}
+  );
+};
 
-export default AddDatePickerEventModal
+export default AddDatePickerEventModal;

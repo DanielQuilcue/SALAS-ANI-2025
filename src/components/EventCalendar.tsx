@@ -36,6 +36,10 @@ import moment from "moment";
 
 import "moment-timezone"; // or 'moment-timezone/builds/moment-timezone-with-data[-datarange].js'. See their docs
 
+import { db } from "../firebase/firebaseConfig";
+import { collection, addDoc } from "firebase/firestore";
+import { useLocation } from "wouter";
+
 moment.tz.setDefault("America/New_York");
 
 const locales = momentLocalizer(moment); // or globalizeLocalizer
@@ -63,24 +67,31 @@ export interface ITodo {
 
 export interface IEventInfo extends Event {
   _id: string;
-  description: string;
+  // description: string;
+  meeting: string;
   todoId?: string;
-  pleople: string;
+  people: string;
   start?: Date;
   end?: Date;
 }
 
 export interface EventFormData {
-  description: string;
+  // description: string;
   todoId?: string;
-  pleople: string;
+  meeting: string;
+  people: string;
+  vicepresidency: string;
+  room: string;
   start?: Date;
   end?: Date;
 }
 
 export interface DatePickerEventFormData {
-  description: string;
-  pleople: string;
+  // description: string;
+  meeting: string;
+  people: string;
+  vicepresidency: string;
+  room: string;
   todoId?: string;
   allDay: boolean;
   start?: Date;
@@ -91,16 +102,22 @@ export const generateId = () =>
   (Math.floor(Math.random() * 10000) + 1).toString();
 
 const initialEventFormState: EventFormData = {
-  description: "",
+  // description: "",
+  meeting: "",
   todoId: undefined,
-  pleople: "",
+  people: "",
+  vicepresidency: "",
+  room: "",
   start: undefined,
   end: undefined,
 };
 
 const initialDatePickerEventFormData: DatePickerEventFormData = {
-  description: "",
-  pleople: "",
+  // description: "",
+  meeting: "",
+  people: "",
+  vicepresidency: "",
+  room: "",
   todoId: undefined,
   allDay: false,
   start: undefined,
@@ -147,7 +164,7 @@ const EventCalendar = () => {
     setOpenDatepickerModal(false);
   };
 
-  const onAddEvent = (e: MouseEvent<HTMLButtonElement>) => {
+  const onAddEvent = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     const data: IEventInfo = {
@@ -155,11 +172,24 @@ const EventCalendar = () => {
       _id: generateId(),
       start: currentEvent?.start,
       end: currentEvent?.end,
+      todoId: eventFormData.todoId || "", // Si todoId es undefined, asignamos null
     };
 
-    const newEvents = [...events, data];
+    // const newEvents = [...events, data];
 
-    setEvents(newEvents);
+    try {
+      // Crear el objeto de evento para enviar a Firebase
+      // const newEvent = [...events, data];
+
+      // Agregar el nuevo evento a Firestore
+      await addDoc(collection(db, "salas"), data);
+
+      alert("Evento agregado exitosamente");
+    } catch (error) {
+      console.error("Error al agregar evento a Firebase: ", error);
+    }
+
+    setEvents([...events, data]);
     handleClose();
   };
 
@@ -198,6 +228,9 @@ const EventCalendar = () => {
     setEventInfoModal(false);
   };
 
+  const location = useLocation();
+
+  console.log(location[0]);
   return (
     <Box
       mt={2}
@@ -213,9 +246,11 @@ const EventCalendar = () => {
           {/* <CardHeader title="AUDITORIO" subheader="Texto motivacional" /> */}
           <CardHeader title="AUDITORIO" />
 
-          <Divider />
+          {/* <Divider /> */}
+
+          {/* <Divider /> */}
           <CardContent>
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            {/* <Box sx={{ display: "flex", justifyContent: "space-between" }}>
               <ButtonGroup
                 size="large"
                 variant="contained"
@@ -237,8 +272,8 @@ const EventCalendar = () => {
                   Crear Categoria{" "}
                 </Button>
               </ButtonGroup>
-            </Box>
-            <Divider style={{ margin: 10 }} />
+            </Box> */}
+            {/* <Divider style={{ margin: 10 }} /> */}
             <AddEventModal
               open={openSlot}
               handleClose={handleClose}
@@ -283,10 +318,10 @@ const EventCalendar = () => {
                 style: {
                   backgroundColor:
                     todos.find((todo) => todo._id === event.todoId)?.color ||
-                    "#b64fc8",
+                    "#1976d2",
                   borderColor:
                     todos.find((todo) => todo._id === event.todoId)?.color ||
-                    "#b64fc8",
+                    "#1976d2",
                 },
               })}
               style={{ height: 900 }}

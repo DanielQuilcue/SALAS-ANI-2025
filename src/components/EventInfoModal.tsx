@@ -3,11 +3,11 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
+  // DialogContentText,
   DialogTitle,
   Button,
-  Typography,
-  Chip,
+  // Typography,
+  // Chip,
   Divider,
   TextField,
   Box,
@@ -45,7 +45,7 @@ const EventInfoModal = ({
             margin="dense"
             id="outlined-read-only-input"
             label="Nombre de la reunión"
-            defaultValue={currentEvent?.description}
+            defaultValue={currentEvent?.meeting}
             InputProps={{
               readOnly: true,
             }}
@@ -55,7 +55,7 @@ const EventInfoModal = ({
             margin="dense"
             id="outlined-read-only-input"
             label="Persona encargada"
-            defaultValue={currentEvent?.pleople}
+            defaultValue={currentEvent?.people}
             InputProps={{
               readOnly: true,
             }}

@@ -33,8 +33,8 @@ const AddEventModal = ({
   onAddEvent,
   todos,
 }: IProps) => {
-  const { description } = eventFormData;
-
+  const { meeting, people, vicepresidency } = eventFormData;
+  console.log(todos);
   const onClose = () => handleClose();
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -61,10 +61,10 @@ const AddEventModal = ({
         </DialogContentText>
         <Box component="form">
           <TextField
-            name="description"
-            value={description}
+            name="meeting"
+            value={meeting}
             margin="dense"
-            id="description"
+            id="meeting"
             label="Nombre de la reunión"
             type="text"
             fullWidth
@@ -72,10 +72,10 @@ const AddEventModal = ({
             onChange={onChange}
           />
           <TextField
-            name="pleople"
-            // value={description}
+            name="people"
+            value={people}
             margin="dense"
-            id="pleople"
+            id="people"
             label="Persona responsable"
             type="text"
             fullWidth
@@ -90,27 +90,35 @@ const AddEventModal = ({
             <Select
               labelId="demo-simple-select-autowidth-label"
               id="demo-simple-select-autowidth"
-              // value={age}
-              // onChange={onChange}
+              value={vicepresidency}
+              onChange={onChange}
               margin="dense"
               autoWidth
-              label="A qué Vicepresidencia u Oficina perteneces
-"
+              label="Vicepresidencia u Oficina perteneces"
+              name="vicepresidency"
             >
-              {/* <MenuItem value="">
-                <em>None</em>
-              </MenuItem> */}
-              <MenuItem value={20}>Presidencia</MenuItem>
-              <MenuItem value={21}>Oficina de Control Interno</MenuItem>
-              <MenuItem value={22}>Oficina de Comunicaciones</MenuItem>
-              <MenuItem value={22}>
+              <MenuItem value="Presidencia">Presidencia</MenuItem>
+              <MenuItem value="Oficina de Control Interno">
+                Oficina de Control Interno
+              </MenuItem>
+              <MenuItem value="Oficina de Comunicaciones">
+                Oficina de Comunicaciones
+              </MenuItem>
+              <MenuItem value="Vp. de Planeación, Riesgos y Entorno">
                 Vp. de Planeación, Riesgos y Entorno
               </MenuItem>
-              <MenuItem value={22}>Vp. Jurídica</MenuItem>
-              <MenuItem value={22}>Vp. de Estructuración</MenuItem>
-              <MenuItem value={22}>Vp. de Gestión Corporativa</MenuItem>
-              <MenuItem value={22}>Vp. Ejecutiva</MenuItem>
-              <MenuItem value={22}>Vp. de Gestión Contractual</MenuItem>
+              <MenuItem value="Vp. Jurídica">Vp. Jurídica</MenuItem>
+              <MenuItem value="Vp. de Estructuración">
+                Vp. de Estructuración
+              </MenuItem>
+              <MenuItem value="Vp. de Gestión Corporativa">
+                Vp. de Gestión Corporativa
+              </MenuItem>
+              <MenuItem value="Vp. Ejecutiva">Vp. Ejecutiva</MenuItem>
+              <MenuItem value="Vp. de Gestión Contractual">
+                Vp. de Gestión Contractual
+              </MenuItem>
+              <MenuItem value="Sindicato - SÉANI">Sindicato (SÉANI)</MenuItem>
             </Select>
           </FormControl>
           <Autocomplete
@@ -124,21 +132,24 @@ const AddEventModal = ({
               <TextField {...params} label="Tipo reunión" />
             )}
           />
+
+          {/* <Autocomplete
+            onChange={handleTodoChange}
+            options={defaultTodos}
+            getOptionLabel={(option) => option.title}
+            renderInput={(params) => (
+              <TextField {...params} label="Tipo reunión" />
+            )}
+          /> */}
         </Box>
       </DialogContent>
       <DialogActions>
         <Button variant="outlined" color="error" onClick={onClose}>
           Cancelar
         </Button>
-        {/* <Button
-          disabled={description === ""}
-          color="success"
-          onClick={onAddEvent}
-        >
-          Agregar
-        </Button> */}
+
         <Button
-          disabled={description === ""}
+          disabled={meeting === ""}
           onClick={onAddEvent}
           variant="contained"
           color="success"
