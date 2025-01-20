@@ -12,7 +12,7 @@ interface IProps {
 }
 
 const EventInfo = ({ event }: IProps) => {
-  console.log(event);
+  // console.log(event);
   return (
     <>
       {/* <Typography gutterBottom variant="h5" component="div">
@@ -23,19 +23,19 @@ const EventInfo = ({ event }: IProps) => {
       {/* <List sx={{ width: "100%", maxWidth: 360 }}> */}
       <List>
         <ListItem>
-          <ListItemAvatar>
+          {/* <ListItemAvatar>
             <Avatar>
               <MeetingRoomIcon />
             </Avatar>
-          </ListItemAvatar>
+          </ListItemAvatar> */}
           <ListItemText primary="Nombre de reunión" secondary={event.meeting} />
         </ListItem>
         <ListItem>
-          <ListItemAvatar>
+          {/* <ListItemAvatar>
             <Avatar>
               <AccountCircleIcon />
             </Avatar>
-          </ListItemAvatar>
+          </ListItemAvatar> */}
           <ListItemText primary="Responsable" secondary={event.people} />
         </ListItem>
       </List>

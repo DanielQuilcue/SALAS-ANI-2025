@@ -1,57 +1,35 @@
-import * as React from "react";
-// import BottomNavigation from "@mui/material/BottomNavigation";
-// import BottomNavigationAction from "@mui/material/BottomNavigationAction";
-// import BedroomBabyIcon from "@mui/icons-material/BedroomBaby";
-// import CameraOutdoorIcon from "@mui/icons-material/CameraOutdoor";
-// import FoundationIcon from "@mui/icons-material/Foundation";
+import { useState, useEffect } from "react";
 
 import CardMain from "../components/Card/CardMain";
-// import { Box } from "@mui/material";
+import Card from "@mui/joy/Card";
+import Typography from "@mui/joy/Typography";
+import { Box } from "@mui/material";
 
 export default function Main() {
-  const [value, setValue] = React.useState("recents");
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
-  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000); // Actualiza cada 1 segundo
+
+    return () => clearInterval(interval); // Limpia el intervalo al desmontar el componente
+  }, []);
 
   return (
     <>
-      {/* <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "10vh", // Por ejemplo, ocupa toda la altura de la ventana
-        }}
-      >
-        <BottomNavigation
-          sx={{ width: 500 }}
-          value={value}
-          onChange={handleChange}
-        >
-          <BottomNavigationAction
-            label="Auditorio"
-            value="recents"
-            icon={<CameraOutdoorIcon />}
-          />
-          <BottomNavigationAction
-            label="Sala 2-4"
-            value="favorites"
-            icon={<FoundationIcon />}
-          />
-          <BottomNavigationAction
-            label="Sala 2-5"
-            value="nearby"
-            icon={<FoundationIcon />}
-          />
-          <BottomNavigationAction
-            label="Bienestar"
-            value="folder"
-            icon={<BedroomBabyIcon />}
-          />
-        </BottomNavigation>
-      </Box> */}
+      <Box sx={{ mx: "auto", mt: 1 }}>
+        <Card variant="outlined" sx={{}}>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography level="h2" sx={{ fontSize: "xl", mb: 0.5 }}>
+              La hora es: {currentTime.toLocaleTimeString()}
+            </Typography>
+            <Typography level="h2" sx={{ fontSize: "xl", mb: 0.5 }}>
+              Del día: {currentTime.toLocaleDateString()}
+            </Typography>
+          </Box>
+        </Card>
+      </Box>
       <CardMain />
     </>
   );

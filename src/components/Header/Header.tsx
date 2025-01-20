@@ -3,7 +3,7 @@ import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
+import Typography from "@mui/joy/Typography";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
@@ -57,7 +57,7 @@ function Header() {
             image="https://www.ani.gov.co/sites/all/themes/bootstrap_ani/images/logoani.svg"
             alt="Logo ANI"
           />
-          <Typography
+          {/* <Typography
             variant="h5"
             noWrap
             component="a"
@@ -73,7 +73,8 @@ function Header() {
             }}
           >
             SALAS ANI {today.getFullYear()}
-          </Typography>
+          </Typography> */}
+          <Typography level="h1">SALAS ANI {today.getFullYear()}</Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
@@ -105,7 +106,6 @@ function Header() {
           </Box>
           <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
           <Typography
-            variant="h5"
             noWrap
             component="a"
             href="#app-bar-with-responsive-menu"

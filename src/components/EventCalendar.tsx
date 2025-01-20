@@ -1,14 +1,5 @@
-import { useState, MouseEvent } from "react";
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Card,
-  CardContent,
-  CardHeader,
-  Container,
-  Divider,
-} from "@mui/material";
+import { useState, MouseEvent, useEffect } from "react";
+import { Box, Card, CardContent, CardHeader, Container } from "@mui/material";
 
 import {
   Calendar,
@@ -37,8 +28,16 @@ import moment from "moment";
 import "moment-timezone"; // or 'moment-timezone/builds/moment-timezone-with-data[-datarange].js'. See their docs
 
 import { db } from "../firebase/firebaseConfig";
-import { collection, addDoc } from "firebase/firestore";
-import { useLocation } from "wouter";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
+
+// import { useLocation } from "wouter";
+import { generateId } from "../utils/inde";
 
 moment.tz.setDefault("America/New_York");
 
@@ -69,19 +68,25 @@ export interface IEventInfo extends Event {
   _id: string;
   // description: string;
   meeting: string;
+  color?: string;
   todoId?: string;
+  todo?: string;
   people: string;
   start?: Date;
   end?: Date;
+  room: string;
+  vicepresidency: string;
 }
 
 export interface EventFormData {
   // description: string;
   todoId?: string;
+  todo?: string;
   meeting: string;
   people: string;
   vicepresidency: string;
   room: string;
+  color: string;
   start?: Date;
   end?: Date;
 }
@@ -92,22 +97,23 @@ export interface DatePickerEventFormData {
   people: string;
   vicepresidency: string;
   room: string;
+  color: string;
+  todo?: string;
   todoId?: string;
   allDay: boolean;
   start?: Date;
   end?: Date;
 }
 
-export const generateId = () =>
-  (Math.floor(Math.random() * 10000) + 1).toString();
-
 const initialEventFormState: EventFormData = {
   // description: "",
   meeting: "",
   todoId: undefined,
+  todo: undefined,
   people: "",
   vicepresidency: "",
   room: "",
+  color: "",
   start: undefined,
   end: undefined,
 };
@@ -119,9 +125,11 @@ const initialDatePickerEventFormData: DatePickerEventFormData = {
   vicepresidency: "",
   room: "",
   todoId: undefined,
+  todo: undefined,
   allDay: false,
   start: undefined,
   end: undefined,
+  color: "",
 };
 
 const EventCalendar = () => {
@@ -131,6 +139,8 @@ const EventCalendar = () => {
   const [currentEvent, setCurrentEvent] = useState<Event | IEventInfo | null>(
     null
   );
+
+  // const location = useLocation();
 
   const [eventInfoModal, setEventInfoModal] = useState(false);
 
@@ -166,22 +176,18 @@ const EventCalendar = () => {
 
   const onAddEvent = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-
     const data: IEventInfo = {
       ...eventFormData,
       _id: generateId(),
       start: currentEvent?.start,
       end: currentEvent?.end,
       todoId: eventFormData.todoId || "", // Si todoId es undefined, asignamos null
+      room: "Auditorio",
+      color: eventFormData.todo?.color || "", // Obtener el color del todo seleccionado
     };
 
-    // const newEvents = [...events, data];
-
+    console.log(data);
     try {
-      // Crear el objeto de evento para enviar a Firebase
-      // const newEvent = [...events, data];
-
-      // Agregar el nuevo evento a Firestore
       await addDoc(collection(db, "salas"), data);
 
       alert("Evento agregado exitosamente");
@@ -221,16 +227,89 @@ const EventCalendar = () => {
     setDatePickerEventFormData(initialDatePickerEventFormData);
   };
 
-  const onDeleteEvent = () => {
-    setEvents(() =>
-      [...events].filter((e) => e._id !== (currentEvent as IEventInfo)._id!)
+  const onDeleteEvent = async () => {
+    setEvents((prevEvents) =>
+      prevEvents.filter(
+        (e) => e.todoId !== (currentEvent as IEventInfo).todoId!
+      )
     );
+
+    // const docRef = doc(db, "salas", (currentEvent as IEventInfo).todoId!);
+    // console.log("Documento a eliminar:", docRef);
+
+    // try {
+    //   // Asegúrate de que la llamada a deleteDoc esté ejecutándose
+    //   await deleteDoc(docRef);
+
+    //   console.log(docRef, "Documento eliminado correctamente!");
+    // } catch (error) {
+    //   console.error("Error al eliminar documento:", error);
+    // }
+
     setEventInfoModal(false);
   };
 
-  const location = useLocation();
+  // const onDeleteEvent = async (documentId: string) => {
+  //   try {
+  //     const docRef = doc(db, "salas", documentId); // Replace "yourCollectionName" with your actual collection name
+  //     await deleteDoc(docRef);
+  //     console.log("Document deleted successfully!");
+  //   } catch (error) {
+  //     console.error("Error deleting document:", error);
+  //   }
+  // };
 
-  console.log(location[0]);
+  // Dentro de tu componente
+  // const onDeleteEvent = async () => {
+  //   // Asegúrate de que currentEvent tenga la propiedad _id
+  //   if (currentEvent && (currentEvent as IEventInfo)._id!) {
+  //     const eventId = (currentEvent as IEventInfo)._id; // Usar el _id del evento
+
+  //     try {
+  //       // Obtén la referencia al documento de Firestore usando el _id
+  //       const eventRef = doc(db, "salas", eventId); // Aquí se usa el _id del evento
+
+  //       console.log(eventRef);
+  //       // Elimina el documento de Firestore
+  //       await deleteDoc(eventRef);
+  //       console.log("Evento eliminado correctamente");
+
+  //       // Elimina el evento de la lista local de eventos
+  //       setEvents((prevEvents) => prevEvents.filter((e) => e._id !== eventId));
+
+  //       // Cierra el modal de información del evento
+  //       setEventInfoModal(false);
+  //     } catch (error) {
+  //       console.error("Error al eliminar evento: ", error);
+  //     }
+  //   }
+  // };
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "salas"));
+        const fetchedEvents: IEventInfo[] = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          if (data.room === "Auditorio") {
+            fetchedEvents.push({
+              ...data,
+              start: data.start.toDate(), // Convertir timestamps a Date
+              end: data.end.toDate(), // Convertir timestamps a Date
+              color: data.color, // Incluye el color del evento
+            });
+          }
+        });
+        setEvents(fetchedEvents);
+      } catch (error) {
+        console.error("Error al obtener eventos: ", error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
   return (
     <Box
       mt={2}
@@ -314,14 +393,11 @@ const EventCalendar = () => {
               endAccessor="end"
               defaultView="week"
               components={{ event: EventInfo }}
+              // color de mostrar
               eventPropGetter={(event) => ({
                 style: {
-                  backgroundColor:
-                    todos.find((todo) => todo._id === event.todoId)?.color ||
-                    "#1976d2",
-                  borderColor:
-                    todos.find((todo) => todo._id === event.todoId)?.color ||
-                    "#1976d2",
+                  backgroundColor: event.color || "#1976d2",
+                  borderColor: event.color || "#1976d2",
                 },
               })}
               style={{ height: 900 }}

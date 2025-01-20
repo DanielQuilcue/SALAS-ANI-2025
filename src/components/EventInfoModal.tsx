@@ -31,11 +31,11 @@ const EventInfoModal = ({
   const onClose = () => {
     handleClose();
   };
-  console.log(currentEvent);
 
+  console.log(currentEvent);
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Información</DialogTitle>
+      <DialogTitle>INFORMACION</DialogTitle>
 
       <DialogContent>
         {/* <DialogContentText> */}
@@ -90,6 +90,17 @@ const EventInfoModal = ({
             }}
           />
         </Box>
+        <Divider></Divider>
+        {/* <TextField
+          sx={{ marginRight: 1, mx: "auto" }}
+          margin="dense"
+          id="outlined-read-only-input"
+          label="Vicepresidencia"
+          defaultValue={currentEvent?.vicepresidency}
+          InputProps={{
+            readOnly: true,
+          }}
+        /> */}
         {/* <Box component="form"></Box> */}
       </DialogContent>
       <DialogActions>

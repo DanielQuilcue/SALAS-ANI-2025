@@ -1,15 +1,5 @@
 import { useState, MouseEvent } from "react";
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Card,
-  CardContent,
-  CardHeader,
-  Container,
-  Divider,
-  Typography,
-} from "@mui/material";
+import { Box, Card, CardContent, CardHeader, Container } from "@mui/material";
 
 import {
   Calendar,
@@ -36,7 +26,8 @@ import moment from "moment";
 // import { Today } from "@mui/icons-material";
 
 import "moment-timezone"; // or 'moment-timezone/builds/moment-timezone-with-data[-datarange].js'. See their docs
-import Menu from "../components/Menu/Menu";
+import { db } from "../firebase/firebaseConfig";
+import { collection, addDoc } from "firebase/firestore";
 
 moment.tz.setDefault("America/New_York");
 
@@ -65,24 +56,29 @@ export interface ITodo {
 
 export interface IEventInfo extends Event {
   _id: string;
-  description: string;
+  meeting: string;
   todoId?: string;
-  pleople: string;
+  people: string;
   start?: Date;
   end?: Date;
+  room: string;
 }
 
 export interface EventFormData {
-  description: string;
   todoId?: string;
-  pleople: string;
+  meeting: string;
+  people: string;
+  vicepresidency: string;
+  room: string;
   start?: Date;
   end?: Date;
 }
 
 export interface DatePickerEventFormData {
-  description: string;
-  pleople: string;
+  meeting: string;
+  people: string;
+  vicepresidency: string;
+  room: string;
   todoId?: string;
   allDay: boolean;
   start?: Date;
@@ -93,16 +89,20 @@ export const generateId = () =>
   (Math.floor(Math.random() * 10000) + 1).toString();
 
 const initialEventFormState: EventFormData = {
-  description: "",
+  meeting: "",
   todoId: undefined,
-  pleople: "",
+  people: "",
+  vicepresidency: "",
+  room: "",
   start: undefined,
   end: undefined,
 };
 
 const initialDatePickerEventFormData: DatePickerEventFormData = {
-  description: "",
-  pleople: "",
+  meeting: "",
+  people: "",
+  vicepresidency: "",
+  room: "",
   todoId: undefined,
   allDay: false,
   start: undefined,
@@ -149,7 +149,7 @@ const Sala24 = () => {
     setOpenDatepickerModal(false);
   };
 
-  const onAddEvent = (e: MouseEvent<HTMLButtonElement>) => {
+  const onAddEvent = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     const data: IEventInfo = {
@@ -157,11 +157,25 @@ const Sala24 = () => {
       _id: generateId(),
       start: currentEvent?.start,
       end: currentEvent?.end,
+      todoId: eventFormData.todoId || "", // Si todoId es undefined, asignamos null
+      room: "Auditorio",
     };
 
-    const newEvents = [...events, data];
+    // const newEvents = [...events, data];
+    // console.log(data);
+    try {
+      // Crear el objeto de evento para enviar a Firebase
+      // const newEvent = [...events, data];
 
-    setEvents(newEvents);
+      // Agregar el nuevo evento a Firestore
+      await addDoc(collection(db, "salas"), data);
+
+      alert("Evento agregado exitosamente");
+    } catch (error) {
+      console.error("Error al agregar evento a Firebase: ", error);
+    }
+
+    setEvents([...events, data]);
     handleClose();
   };
 
@@ -284,10 +298,10 @@ const Sala24 = () => {
                 style: {
                   backgroundColor:
                     todos.find((todo) => todo._id === event.todoId)?.color ||
-                    "#b64fc8",
+                    "#0070c0",
                   borderColor:
                     todos.find((todo) => todo._id === event.todoId)?.color ||
-                    "#b64fc8",
+                    "#0070c0",
                 },
               })}
               style={{ height: 900 }}

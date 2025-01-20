@@ -62,24 +62,29 @@ export interface ITodo {
 
 export interface IEventInfo extends Event {
   _id: string;
-  description: string;
+  meeting: string;
   todoId?: string;
-  pleople: string;
+  people: string;
   start?: Date;
   end?: Date;
+  room: string;
 }
 
 export interface EventFormData {
-  description: string;
   todoId?: string;
-  pleople: string;
+  meeting: string;
+  people: string;
+  vicepresidency: string;
+  room: string;
   start?: Date;
   end?: Date;
 }
 
 export interface DatePickerEventFormData {
-  description: string;
-  pleople: string;
+  meeting: string;
+  people: string;
+  vicepresidency: string;
+  room: string;
   todoId?: string;
   allDay: boolean;
   start?: Date;
@@ -90,16 +95,20 @@ export const generateId = () =>
   (Math.floor(Math.random() * 10000) + 1).toString();
 
 const initialEventFormState: EventFormData = {
-  description: "",
+  meeting: "",
   todoId: undefined,
-  pleople: "",
+  people: "",
+  vicepresidency: "",
+  room: "",
   start: undefined,
   end: undefined,
 };
 
 const initialDatePickerEventFormData: DatePickerEventFormData = {
-  description: "",
-  pleople: "",
+  meeting: "",
+  people: "",
+  vicepresidency: "",
+  room: "",
   todoId: undefined,
   allDay: false,
   start: undefined,
@@ -154,6 +163,8 @@ const Sala25 = () => {
       _id: generateId(),
       start: currentEvent?.start,
       end: currentEvent?.end,
+      todoId: eventFormData.todoId || "", // Si todoId es undefined, asignamos null
+      room: "Sala 2-5",
     };
 
     const newEvents = [...events, data];
@@ -281,10 +292,10 @@ const Sala25 = () => {
                 style: {
                   backgroundColor:
                     todos.find((todo) => todo._id === event.todoId)?.color ||
-                    "#b64fc8",
+                    "#ff6600",
                   borderColor:
                     todos.find((todo) => todo._id === event.todoId)?.color ||
-                    "#b64fc8",
+                    "#ff6600",
                 },
               })}
               style={{ height: 900 }}

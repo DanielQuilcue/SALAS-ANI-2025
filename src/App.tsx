@@ -19,7 +19,7 @@ function App() {
 
         <Route path="/auditorio" component={EventCalendar} />
         <Route path="/sala24" component={Sala24} />
-        <Route path="/sala25 " component={Sala25} />
+        <Route path="/sala25" component={Sala25} />
         <Route path="/bienestar" component={Bienestar} />
 
         <Route path="/login" component={SignIn} />

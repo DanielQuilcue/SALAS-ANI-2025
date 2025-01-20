@@ -34,7 +34,6 @@ const AddEventModal = ({
   todos,
 }: IProps) => {
   const { meeting, people, vicepresidency } = eventFormData;
-  console.log(todos);
   const onClose = () => handleClose();
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -47,7 +46,8 @@ const AddEventModal = ({
   const handleTodoChange = (e: React.SyntheticEvent, value: ITodo | null) => {
     setEventFormData((prevState) => ({
       ...prevState,
-      todoId: value?._id,
+      todo: value || null, // Guardar todo completo
+      todoId: value?._id || "", // Puedes seguir guardando el todoId si lo necesitas
     }));
   };
 
