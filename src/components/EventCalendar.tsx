@@ -28,13 +28,7 @@ import moment from "moment";
 import "moment-timezone"; // or 'moment-timezone/builds/moment-timezone-with-data[-datarange].js'. See their docs
 
 import { db } from "../firebase/firebaseConfig";
-import {
-  collection,
-  addDoc,
-  getDocs,
-  deleteDoc,
-  doc,
-} from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 
 // import { useLocation } from "wouter";
 import { generateId } from "../utils/inde";
@@ -183,7 +177,7 @@ const EventCalendar = () => {
       end: currentEvent?.end,
       todoId: eventFormData.todoId || "", // Si todoId es undefined, asignamos null
       room: "Auditorio",
-      color: eventFormData.todo?.color || "", // Obtener el color del todo seleccionado
+      color: eventFormData.color || "", // Obtener el color del todo seleccionado
     };
 
     console.log(data);
@@ -294,10 +288,16 @@ const EventCalendar = () => {
           const data = doc.data();
           if (data.room === "Auditorio") {
             fetchedEvents.push({
-              ...data,
-              start: data.start.toDate(), // Convertir timestamps a Date
-              end: data.end.toDate(), // Convertir timestamps a Date
-              color: data.color, // Incluye el color del evento
+              _id: data._id || "", // Asegúrate de que `_id` siempre tenga un valor
+              meeting: data.meeting || "Sin título", // Valor predeterminado para `meeting`
+              people: data.people || "Desconocido", // Valor predeterminado para `people`
+              room: data.room, // Campo `room` ya validado
+              vicepresidency: data.vicepresidency || "Sin vicepresidencia", // Valor predeterminado
+              start: data.start?.toDate() || new Date(), // Convierte a Date o usa la fecha actual
+              end: data.end?.toDate() || new Date(), // Convierte a Date o usa la fecha actual
+              color: data.color || "#1976d2", // Valor predeterminado para color
+              todo: data.todo || "Sin tarea", // Valor predeterminado para `todo`
+              todoId: data.todoId || "", // Valor predeterminado para `todoId`
             });
           }
         });

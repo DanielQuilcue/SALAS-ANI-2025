@@ -173,7 +173,8 @@ const Bienestar = () => {
       end: currentEvent?.end,
       todoId: eventFormData.todoId || "", // Si todoId es undefined, asignamos null
       room: "Bienestar",
-      color: eventFormData.todo?.color || "", // Obtener el color del todo seleccionado
+      // color: eventFormData.todo?.color || "", // Obtener el color del todo seleccionado
+      color: eventFormData.color || "", // Obtener el color del todo seleccionado
     };
 
     // const newEvents = [...events, data];
@@ -238,10 +239,16 @@ const Bienestar = () => {
           const data = doc.data();
           if (data.room === "Bienestar") {
             fetchedEvents.push({
-              ...data,
-              start: data.start.toDate(), // Convertir timestamps a Date
-              end: data.end.toDate(), // Convertir timestamps a Date
-              color: data.color, // Incluye el color del evento
+              _id: data._id || "", // Asegúrate de que `_id` siempre tenga un valor
+              meeting: data.meeting || "Sin título", // Valor predeterminado para `meeting`
+              people: data.people || "Desconocido", // Valor predeterminado para `people`
+              room: data.room, // Campo `room` ya validado
+              vicepresidency: data.vicepresidency || "Sin vicepresidencia", // Valor predeterminado
+              start: data.start?.toDate() || new Date(), // Convierte a Date o usa la fecha actual
+              end: data.end?.toDate() || new Date(), // Convierte a Date o usa la fecha actual
+              color: data.color || "#1976d2", // Valor predeterminado para color
+              todo: data.todo || "Sin tarea", // Valor predeterminado para `todo`
+              todoId: data.todoId || "", // Valor predeterminado para `todoId`
             });
           }
         });
@@ -333,12 +340,8 @@ const Bienestar = () => {
               components={{ event: EventInfo }}
               eventPropGetter={(event) => ({
                 style: {
-                  backgroundColor:
-                    todos.find((todo) => todo._id === event.todoId)?.color ||
-                    "#00b050",
-                  borderColor:
-                    todos.find((todo) => todo._id === event.todoId)?.color ||
-                    "#00b050",
+                  backgroundColor: event.color || "#1976d2",
+                  borderColor: event.color || "#1976d2",
                 },
               })}
               style={{ height: 900 }}

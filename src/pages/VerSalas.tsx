@@ -6,7 +6,6 @@ import Container from "@mui/material/Container";
 
 import CardMedia from "@mui/material/CardMedia";
 import CardMain from "../components/Card/CardMain";
-import Navigation from "../components/Navigation/Navigation";
 
 function VerSalas() {
   const today = new Date();

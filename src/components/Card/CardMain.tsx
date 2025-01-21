@@ -40,67 +40,75 @@ export default function CardMain() {
   return (
     <Grid
       container
-      spacing={{ xs: 2, md: 3 }}
-      columns={{ xs: 4, sm: 8, md: 12 }}
+      spacing={{ xs: 2, sm: 8, md: 12 }}
       sx={{ display: "flex", justifyContent: "center", mt: 1 }}
     >
-      {data.map((item) => (
-        <Card
-          key={item.id}
-          variant="solid"
-          invertedColors
-          sx={{
-            mx: 1,
-            mt: 1,
-            width: 370,
-            backgroundColor: getCardColor(item.room),
-          }}
-        >
-          <CardContent
-            orientation="horizontal"
-            sx={{ display: "flex", alignItems: "center" }}
-          >
-            <Avatar
-              alt="Calendar Icon"
-              src={Calendar}
-              sx={{
-                "--Avatar-size": "66px",
-              }}
-            />
-            <CardContent>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography level="body-md">{item.people}</Typography>
-                <Button variant="soft" size="sm">
-                  {item.room}
-                </Button>
-              </Box>
+      {data.map((item) => {
+        // Validar si start y end están definidos antes de usarlos
+        const startTime = item.start
+          ? new Date(item.start.seconds * 1000).toLocaleTimeString()
+          : "Hora no disponible";
+        const endTime = item.end
+          ? new Date(item.end.seconds * 1000).toLocaleTimeString()
+          : "Hora no disponible";
 
-              <Typography level="h2">{item.meeting}</Typography>
-              <Typography level="h4">{item.vicepresidency}</Typography>
-            </CardContent>
-          </CardContent>
-          <CardActions
+        return (
+          <Card
+            key={item.id}
+            variant="solid"
+            invertedColors
             sx={{
-              mx: "auto",
-              // display: "flex",
+              mx: 1,
+              mt: 1,
               width: 370,
-              justifyContent: "space-between",
+              backgroundColor: getCardColor(item.room),
             }}
           >
-            <Button variant="soft" size="sm">
-              {new Date(item.start.seconds * 1000).toLocaleTimeString()}
-            </Button>
-            <Button variant="solid" size="sm">
-              {new Date(item.end.seconds * 1000).toLocaleTimeString()}
-            </Button>
-          </CardActions>
-        </Card>
-      ))}
+            <CardContent
+              orientation="horizontal"
+              sx={{ display: "flex", alignItems: "center" }}
+            >
+              <Avatar
+                alt="Calendar Icon"
+                src={Calendar}
+                sx={{
+                  "--Avatar-size": "66px",
+                }}
+              />
+              <CardContent>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Typography level="body-md">{item.people}</Typography>
+                  <Button variant="soft" size="sm">
+                    {item.room}
+                  </Button>
+                </Box>
+
+                <Typography level="h2">{item.meeting}</Typography>
+                <Typography level="h4">{item.vicepresidency}</Typography>
+              </CardContent>
+            </CardContent>
+            <CardActions
+              sx={{
+                mx: "auto",
+                width: 370,
+                justifyContent: "space-between",
+              }}
+            >
+              <Button variant="soft" size="sm">
+                {startTime}
+              </Button>
+              <Button variant="solid" size="sm">
+                {endTime}
+              </Button>
+            </CardActions>
+          </Card>
+        );
+      })}
     </Grid>
   );
 }

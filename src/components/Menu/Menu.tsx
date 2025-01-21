@@ -43,9 +43,9 @@ export default function Menu() {
         <BottomNavigation
           showLabels
           value={value}
-          onChange={(event, newValue) => {
-            setValue(newValue);
-          }}
+          // onChange={(event, newValue) => {
+          //   setValue(newValue);
+          // }}
         >
           <BottomNavigationAction
             label="Reservas"

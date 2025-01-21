@@ -3,6 +3,12 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { Timestamp } from "firebase/firestore";
 
+// interface EventItem {
+//   id: string;
+//   start: Timestamp; // Ajusta según tus datos reales
+//   // Agrega otras propiedades si es necesario
+// }
+
 interface DataItem {
   id: string;
   start?: Timestamp; // Fecha almacenada como Timestamp en Firebase
@@ -24,15 +30,19 @@ export function UseFetchData(collectionName: string) {
 
         const querySnapshot = await getDocs(collection(db, collectionName));
         const items = querySnapshot.docs
-          .map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }))
+          .map((doc) => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              ...data,
+              start: data.start instanceof Timestamp ? data.start : undefined, // Validar `start`
+            } as DataItem;
+          })
           .filter((item) => {
             if (!item.start) return false; // Excluir elementos sin campo `start`
 
             // Convertir `start` de Firebase (Timestamp) a objeto Date
-            const startDate = (item.start as Timestamp).toDate();
+            const startDate = item.start.toDate();
 
             // Normalizar `startDate` al inicio del día
             const normalizedStart = new Date(startDate);
@@ -42,7 +52,7 @@ export function UseFetchData(collectionName: string) {
             return normalizedStart.getTime() === today.getTime();
           });
 
-        setData(items as DataItem[]);
+        setData(items);
       } catch (err) {
         setError("Error al recuperar datos");
         console.error(err);
