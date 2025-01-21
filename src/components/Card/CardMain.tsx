@@ -48,16 +48,18 @@ export default function CardMain() {
         <Card
           key={item.id}
           variant="solid"
-          // color={getCardColor(item.room)} // Asigna el color dinámico
           invertedColors
           sx={{
             mx: 1,
             mt: 1,
-            width: 400,
+            width: 370,
             backgroundColor: getCardColor(item.room),
           }}
         >
-          <CardContent orientation="horizontal">
+          <CardContent
+            orientation="horizontal"
+            sx={{ display: "flex", alignItems: "center" }}
+          >
             <Avatar
               alt="Calendar Icon"
               src={Calendar}
@@ -73,7 +75,6 @@ export default function CardMain() {
                 }}
               >
                 <Typography level="body-md">{item.people}</Typography>
-                {/* <Typography level="h5">{item.room}</Typography> */}
                 <Button variant="soft" size="sm">
                   {item.room}
                 </Button>
@@ -86,7 +87,8 @@ export default function CardMain() {
           <CardActions
             sx={{
               mx: "auto",
-              display: "flex",
+              // display: "flex",
+              width: 370,
               justifyContent: "space-between",
             }}
           >

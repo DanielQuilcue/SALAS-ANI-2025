@@ -39,7 +39,7 @@ const EventInfoModal = ({
 
       <DialogContent>
         {/* <DialogContentText> */}
-        <Box component="form">
+        <Box component="form" sx={{ xs: "flex", justifyContent: "center" }}>
           <TextField
             sx={{ marginRight: 1 }}
             margin="dense"

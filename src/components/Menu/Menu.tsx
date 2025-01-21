@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter"; // Importar el hook de wouter
 
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
@@ -11,19 +12,17 @@ import { Box } from "@mui/material";
 import Paper from "@mui/material/Paper";
 
 export default function Menu() {
-  const [value, setValue] = useState("recents");
+  const [location] = useLocation(); // Hook para obtener la ruta actual
+  const [value, setValue] = useState(location); // Inicializar con la ruta actual
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
-  };
+  // Sincronizar el estado del BottomNavigation con la ruta actual
+  useEffect(() => {
+    setValue(location);
+  }, [location]);
+
   return (
     <Box
       sx={{
-        // display: "flex",
-        // justifyContent: "center",
-        // alignItems: "center",
-        // height: "10vh",
-        // Por ejemplo, ocupa toda la altura de la ventana
         position: "fixed",
         transform: "translateZ(0px)",
         bottom: 0,
@@ -35,41 +34,6 @@ export default function Menu() {
         zIndex: (theme) => theme.zIndex.drawer + 2,
       }}
     >
-      {/* <BottomNavigation
-        sx={{ width: 500 }}
-        value={value}
-        onChange={handleChange}
-      >
-        <BottomNavigationAction
-          label="Auditorio"
-          value="recents"
-          icon={<CameraOutdoorIcon />}
-          component={Link}
-          to="/auditorio"
-        />
-        <BottomNavigationAction
-          label="Sala 2-4"
-          value="favorites"
-          icon={<FoundationIcon />}
-          component={Link}
-          to="/sala24"
-        />
-        <BottomNavigationAction
-          label="Sala 2-5"
-          value="nearby"
-          icon={<FoundationIcon />}
-          component={Link}
-          to="/sala25"
-        />
-        <BottomNavigationAction
-          label="Bienestar"
-          value="folder"
-          icon={<BedroomBabyIcon />}
-          component={Link}
-          to="/bienestar"
-        />
-      </BottomNavigation> */}
-
       <Paper
         sx={{
           width: 500,
@@ -85,35 +49,35 @@ export default function Menu() {
         >
           <BottomNavigationAction
             label="Reservas"
-            value="reservas"
+            value="/"
             icon={<WindowIcon />}
             component={Link}
             to="/"
           />
           <BottomNavigationAction
             label="Auditorio"
-            value="recents"
+            value="/auditorio"
             icon={<CameraOutdoorIcon />}
             component={Link}
             to="/auditorio"
           />
           <BottomNavigationAction
             label="Sala 2-4"
-            value="favorites"
+            value="/sala24"
             icon={<FoundationIcon />}
             component={Link}
             to="/sala24"
           />
           <BottomNavigationAction
             label="Sala 2-5"
-            value="nearby"
+            value="/sala25"
             icon={<FoundationIcon />}
             component={Link}
             to="/sala25"
           />
           <BottomNavigationAction
             label="Bienestar"
-            value="folder"
+            value="/bienestar"
             icon={<BedroomBabyIcon />}
             component={Link}
             to="/bienestar"

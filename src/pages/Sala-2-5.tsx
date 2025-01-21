@@ -1,12 +1,5 @@
-import { useState, MouseEvent } from "react";
-import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  Container,
-  Divider,
-} from "@mui/material";
+import { useState, MouseEvent, useEffect } from "react";
+import { Box, Card, CardContent, CardHeader, Container } from "@mui/material";
 
 import {
   Calendar,
@@ -33,7 +26,9 @@ import moment from "moment";
 // import { Today } from "@mui/icons-material";
 
 import "moment-timezone"; // or 'moment-timezone/builds/moment-timezone-with-data[-datarange].js'. See their docs
-import Menu from "../components/Menu/Menu";
+import { generateId } from "../utils/inde";
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase/firebaseConfig";
 
 moment.tz.setDefault("America/New_York");
 
@@ -62,59 +57,98 @@ export interface ITodo {
 
 export interface IEventInfo extends Event {
   _id: string;
+  // description: string;
   meeting: string;
+  color?: string;
   todoId?: string;
+  todo?: string;
   people: string;
   start?: Date;
   end?: Date;
   room: string;
+  vicepresidency: string;
 }
 
 export interface EventFormData {
+  // description: string;
   todoId?: string;
+  todo?: string;
   meeting: string;
   people: string;
   vicepresidency: string;
   room: string;
+  color: string;
+  start?: Date;
+  end?: Date;
+}
+
+export interface IEventInfo extends Event {
+  _id: string;
+  // description: string;
+  meeting: string;
+  color?: string;
+  todoId?: string;
+  todo?: string;
+  people: string;
+  start?: Date;
+  end?: Date;
+  room: string;
+  vicepresidency: string;
+}
+
+export interface EventFormData {
+  // description: string;
+  todoId?: string;
+  todo?: string;
+  meeting: string;
+  people: string;
+  vicepresidency: string;
+  room: string;
+  color: string;
   start?: Date;
   end?: Date;
 }
 
 export interface DatePickerEventFormData {
+  // description: string;
   meeting: string;
   people: string;
   vicepresidency: string;
   room: string;
+  color: string;
+  todo?: string;
   todoId?: string;
   allDay: boolean;
   start?: Date;
   end?: Date;
 }
 
-export const generateId = () =>
-  (Math.floor(Math.random() * 10000) + 1).toString();
-
 const initialEventFormState: EventFormData = {
+  // description: "",
   meeting: "",
   todoId: undefined,
+  todo: undefined,
   people: "",
   vicepresidency: "",
   room: "",
+  color: "",
   start: undefined,
   end: undefined,
 };
 
 const initialDatePickerEventFormData: DatePickerEventFormData = {
+  // description: "",
   meeting: "",
   people: "",
   vicepresidency: "",
   room: "",
   todoId: undefined,
+  todo: undefined,
   allDay: false,
   start: undefined,
   end: undefined,
+  color: "",
 };
-
 const Sala25 = () => {
   const [openSlot, setOpenSlot] = useState(false);
   const [openDatepickerModal, setOpenDatepickerModal] = useState(false);
@@ -155,7 +189,7 @@ const Sala25 = () => {
     setOpenDatepickerModal(false);
   };
 
-  const onAddEvent = (e: MouseEvent<HTMLButtonElement>) => {
+  const onAddEvent = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     const data: IEventInfo = {
@@ -165,11 +199,24 @@ const Sala25 = () => {
       end: currentEvent?.end,
       todoId: eventFormData.todoId || "", // Si todoId es undefined, asignamos null
       room: "Sala 2-5",
+      color: eventFormData.todo?.color || "", // Obtener el color del todo seleccionado
     };
 
-    const newEvents = [...events, data];
+    // const newEvents = [...events, data];
+    // console.log(data);
+    try {
+      // Crear el objeto de evento para enviar a Firebase
+      // const newEvent = [...events, data];
 
-    setEvents(newEvents);
+      // Agregar el nuevo evento a Firestore
+      await addDoc(collection(db, "salas"), data);
+
+      alert("Evento agregado exitosamente");
+    } catch (error) {
+      console.error("Error al agregar evento a Firebase: ", error);
+    }
+
+    setEvents([...events, data]);
     handleClose();
   };
 
@@ -207,6 +254,31 @@ const Sala25 = () => {
     );
     setEventInfoModal(false);
   };
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "salas"));
+        const fetchedEvents: IEventInfo[] = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          if (data.room === "Sala 2-5") {
+            fetchedEvents.push({
+              ...data,
+              start: data.start.toDate(), // Convertir timestamps a Date
+              end: data.end.toDate(), // Convertir timestamps a Date
+              color: data.color, // Incluye el color del evento
+            });
+          }
+        });
+        setEvents(fetchedEvents);
+      } catch (error) {
+        console.error("Error al obtener eventos: ", error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   return (
     <Box

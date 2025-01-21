@@ -75,7 +75,7 @@ function Header() {
             SALAS ANI {today.getFullYear()}
           </Typography> */}
           <Typography level="h1">SALAS ANI {today.getFullYear()}</Typography>
-
+          {/* 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
@@ -103,9 +103,9 @@ function Header() {
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: "block", md: "none" } }}
             ></Menu>
-          </Box>
-          <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
-          <Typography
+          </Box> */}
+          {/* <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} /> */}
+          {/* <Typography
             noWrap
             component="a"
             href="#app-bar-with-responsive-menu"
@@ -121,7 +121,7 @@ function Header() {
             }}
           >
             LOGO
-          </Typography>
+          </Typography> */}
 
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
