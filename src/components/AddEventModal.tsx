@@ -13,6 +13,7 @@ import {
   MenuItem,
   FormControl,
   Select,
+  SelectChangeEvent,
 } from "@mui/material";
 import { EventFormData, ITodo } from "./EventCalendar";
 
@@ -36,17 +37,24 @@ const AddEventModal = ({
   const { meeting, people, vicepresidency } = eventFormData;
   const onClose = () => handleClose();
 
-  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const onChangeInput = (event: ChangeEvent<HTMLInputElement>) => {
     setEventFormData((prevState) => ({
       ...prevState,
       [event.target.name]: event.target.value,
     }));
   };
 
-  const handleTodoChange = (e: React.SyntheticEvent, value: ITodo | null) => {
+  const onChangeSelect = (event: SelectChangeEvent<string>) => {
     setEventFormData((prevState) => ({
       ...prevState,
-      todo: value || null, // Guardar todo completo
+      [event.target.name]: event.target.value,
+    }));
+  };
+
+  const handleTodoChange = (value: ITodo | null) => {
+    setEventFormData((prevState) => ({
+      ...prevState,
+      todo: value ?? undefined, // Usar undefined en lugar de null
       todoId: value?._id || "", // Puedes seguir guardando el todoId si lo necesitas
     }));
   };
@@ -69,7 +77,7 @@ const AddEventModal = ({
             type="text"
             fullWidth
             variant="outlined"
-            onChange={onChange}
+            onChange={onChangeInput}
           />
           <TextField
             name="people"
@@ -80,7 +88,7 @@ const AddEventModal = ({
             type="text"
             fullWidth
             variant="outlined"
-            onChange={onChange}
+            onChange={onChangeInput}
           />
 
           <FormControl fullWidth margin="dense">
@@ -91,7 +99,7 @@ const AddEventModal = ({
               labelId="demo-simple-select-autowidth-label"
               id="demo-simple-select-autowidth"
               value={vicepresidency}
-              onChange={onChange}
+              onChange={onChangeSelect}
               margin="dense"
               autoWidth
               label="Vicepresidencia u Oficina perteneces"
@@ -122,7 +130,7 @@ const AddEventModal = ({
             </Select>
           </FormControl>
           <Autocomplete
-            onChange={handleTodoChange}
+            onChange={(_event, value) => handleTodoChange(value)}
             disablePortal
             id="combo-box-demo"
             options={todos}

@@ -61,7 +61,9 @@ export interface IEventInfo extends Event {
   meeting: string;
   color?: string;
   todoId?: string;
-  todo?: string;
+  todo?: ITodo; // Cambié aquí, ahora es un objeto de tipo ITodo
+
+  // todo?: string;
   people: string;
   start?: Date;
   end?: Date;
@@ -72,34 +74,7 @@ export interface IEventInfo extends Event {
 export interface EventFormData {
   // description: string;
   todoId?: string;
-  todo?: string;
-  meeting: string;
-  people: string;
-  vicepresidency: string;
-  room: string;
-  color: string;
-  start?: Date;
-  end?: Date;
-}
-
-export interface IEventInfo extends Event {
-  _id: string;
-  // description: string;
-  meeting: string;
-  color?: string;
-  todoId?: string;
-  todo?: string;
-  people: string;
-  start?: Date;
-  end?: Date;
-  room: string;
-  vicepresidency: string;
-}
-
-export interface EventFormData {
-  // description: string;
-  todoId?: string;
-  todo?: string;
+  todo?: ITodo;
   meeting: string;
   people: string;
   vicepresidency: string;
@@ -116,7 +91,7 @@ export interface DatePickerEventFormData {
   vicepresidency: string;
   room: string;
   color: string;
-  todo?: string;
+  todo?: ITodo;
   todoId?: string;
   allDay: boolean;
   start?: Date;
@@ -199,8 +174,8 @@ const Sala25 = () => {
       end: currentEvent?.end,
       todoId: eventFormData.todoId || "", // Si todoId es undefined, asignamos null
       room: "Sala 2-5",
-      // color: eventFormData.todo?.color || "", // Obtener el color del todo seleccionado
-      color: eventFormData.color || "", // Obtener el color del todo seleccionado
+      color: eventFormData.todo?.color || "", // Obtener el color del todo seleccionado
+      //color: eventFormData.color || "", // Obtener el color del todo seleccionado
     };
 
     // const newEvents = [...events, data];
@@ -224,23 +199,34 @@ const Sala25 = () => {
   const onAddEventFromDatePicker = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    const addHours = (date: Date | undefined, hours: number) => {
-      return date ? date.setHours(date.getHours() + hours) : undefined;
+    const addHours = (
+      date: Date | undefined,
+      hours: number
+    ): Date | undefined => {
+      if (date) {
+        const newDate = new Date(date); // Crear una nueva instancia de Date
+        newDate.setHours(newDate.getHours() + hours);
+        return newDate; // Retornar el nuevo objeto Date
+      }
+      return undefined;
     };
 
-    const setMinToZero = (date: any) => {
+    const setMinToZero = (date: Date): Date => {
       date.setSeconds(0);
-
       return date;
     };
 
     const data: IEventInfo = {
       ...datePickerEventFormData,
       _id: generateId(),
-      start: setMinToZero(datePickerEventFormData.start),
+      start: datePickerEventFormData.start
+        ? setMinToZero(datePickerEventFormData.start)
+        : undefined,
       end: datePickerEventFormData.allDay
         ? addHours(datePickerEventFormData.start, 12)
-        : setMinToZero(datePickerEventFormData.end),
+        : datePickerEventFormData.end
+          ? setMinToZero(datePickerEventFormData.end)
+          : undefined,
     };
 
     const newEvents = [...events, data];

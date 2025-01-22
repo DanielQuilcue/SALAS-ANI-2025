@@ -14,7 +14,10 @@
     "noEmit": true,
 
     /* Linting */
-    "strict": true,
+    // "strict": true,
+    "noEmitOnError": false, // agreaga para
+    // "suppressImplicitAnyIndexErrors": true, // agregada
+    "strict": false, // agregada
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,

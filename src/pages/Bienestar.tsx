@@ -27,7 +27,8 @@ import moment from "moment";
 
 import "moment-timezone"; // or 'moment-timezone/builds/moment-timezone-with-data[-datarange].js'. See their docs
 import { db } from "../firebase/firebaseConfig";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, onSnapshot } from "firebase/firestore";
+import { generateId } from "../utils/inde";
 moment.tz.setDefault("America/New_York");
 
 const locales = momentLocalizer(moment); // or globalizeLocalizer
@@ -59,7 +60,9 @@ export interface IEventInfo extends Event {
   meeting: string;
   color?: string;
   todoId?: string;
-  todo?: string;
+  todo?: ITodo; // Cambié aquí, ahora es un objeto de tipo ITodo
+
+  // todo?: string;
   people: string;
   start?: Date;
   end?: Date;
@@ -70,7 +73,7 @@ export interface IEventInfo extends Event {
 export interface EventFormData {
   // description: string;
   todoId?: string;
-  todo?: string;
+  todo?: ITodo;
   meeting: string;
   people: string;
   vicepresidency: string;
@@ -87,15 +90,12 @@ export interface DatePickerEventFormData {
   vicepresidency: string;
   room: string;
   color: string;
-  todo?: string;
+  todo?: ITodo;
   todoId?: string;
   allDay: boolean;
   start?: Date;
   end?: Date;
 }
-
-export const generateId = () =>
-  (Math.floor(Math.random() * 10000) + 1).toString();
 
 const initialEventFormState: EventFormData = {
   // description: "",
@@ -109,6 +109,7 @@ const initialEventFormState: EventFormData = {
   start: undefined,
   end: undefined,
 };
+
 const initialDatePickerEventFormData: DatePickerEventFormData = {
   // description: "",
   meeting: "",
@@ -173,8 +174,8 @@ const Bienestar = () => {
       end: currentEvent?.end,
       todoId: eventFormData.todoId || "", // Si todoId es undefined, asignamos null
       room: "Bienestar",
-      // color: eventFormData.todo?.color || "", // Obtener el color del todo seleccionado
-      color: eventFormData.color || "", // Obtener el color del todo seleccionado
+      //color: eventFormData.color || "", // Obtener el color del todo seleccionado
+      todo: eventFormData.todo,
     };
 
     // const newEvents = [...events, data];
@@ -195,26 +196,65 @@ const Bienestar = () => {
     handleClose();
   };
 
+  // const onAddEventFromDatePicker = (e: MouseEvent<HTMLButtonElement>) => {
+  //   e.preventDefault();
+
+  //   const addHours = (date: Date | undefined, hours: number) => {
+  //     return date ? date.setHours(date.getHours() + hours) : undefined;
+  //   };
+
+  //   const setMinToZero = (date: any) => {
+  //     date.setSeconds(0);
+
+  //     return date;
+  //   };
+
+  //   const data: IEventInfo = {
+  //     ...datePickerEventFormData,
+  //     _id: generateId(),
+  //     start: setMinToZero(datePickerEventFormData.start),
+  //     end: datePickerEventFormData.allDay
+  //       ? addHours(datePickerEventFormData.start, 12)
+  //       : setMinToZero(datePickerEventFormData.end),
+  //   };
+
+  //   const newEvents = [...events, data];
+
+  //   setEvents(newEvents);
+  //   setDatePickerEventFormData(initialDatePickerEventFormData);
+  // };
+
   const onAddEventFromDatePicker = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    const addHours = (date: Date | undefined, hours: number) => {
-      return date ? date.setHours(date.getHours() + hours) : undefined;
+    const addHours = (
+      date: Date | undefined,
+      hours: number
+    ): Date | undefined => {
+      if (date) {
+        const newDate = new Date(date); // Crear una nueva instancia de Date
+        newDate.setHours(newDate.getHours() + hours);
+        return newDate; // Retornar el nuevo objeto Date
+      }
+      return undefined;
     };
 
-    const setMinToZero = (date: any) => {
+    const setMinToZero = (date: Date): Date => {
       date.setSeconds(0);
-
       return date;
     };
 
     const data: IEventInfo = {
       ...datePickerEventFormData,
       _id: generateId(),
-      start: setMinToZero(datePickerEventFormData.start),
+      start: datePickerEventFormData.start
+        ? setMinToZero(datePickerEventFormData.start)
+        : undefined,
       end: datePickerEventFormData.allDay
         ? addHours(datePickerEventFormData.start, 12)
-        : setMinToZero(datePickerEventFormData.end),
+        : datePickerEventFormData.end
+          ? setMinToZero(datePickerEventFormData.end)
+          : undefined,
     };
 
     const newEvents = [...events, data];
@@ -231,35 +271,38 @@ const Bienestar = () => {
   };
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "salas"));
+    const unsubscribe = onSnapshot(
+      collection(db, "salas"),
+      (querySnapshot) => {
         const fetchedEvents: IEventInfo[] = [];
         querySnapshot.forEach((doc) => {
           const data = doc.data();
           if (data.room === "Bienestar") {
             fetchedEvents.push({
-              _id: data._id || "", // Asegúrate de que `_id` siempre tenga un valor
-              meeting: data.meeting || "Sin título", // Valor predeterminado para `meeting`
-              people: data.people || "Desconocido", // Valor predeterminado para `people`
-              room: data.room, // Campo `room` ya validado
-              vicepresidency: data.vicepresidency || "Sin vicepresidencia", // Valor predeterminado
-              start: data.start?.toDate() || new Date(), // Convierte a Date o usa la fecha actual
-              end: data.end?.toDate() || new Date(), // Convierte a Date o usa la fecha actual
-              color: data.color || "#1976d2", // Valor predeterminado para color
-              todo: data.todo || "Sin tarea", // Valor predeterminado para `todo`
-              todoId: data.todoId || "", // Valor predeterminado para `todoId`
+              _id: data._id || "",
+              meeting: data.meeting || "Sin título",
+              people: data.people || "Desconocido",
+              room: data.room,
+              vicepresidency: data.vicepresidency || "Sin vicepresidencia",
+              start: data.start?.toDate() || new Date(),
+              end: data.end?.toDate() || new Date(),
+              color: data.color || "#1976d2",
+              todo: data.todo || "Sin tarea",
+              todoId: data.todoId || "",
             });
           }
         });
         setEvents(fetchedEvents);
-      } catch (error) {
-        console.error("Error al obtener eventos: ", error);
+      },
+      (error) => {
+        console.error("Error al obtener eventos en tiempo real: ", error);
       }
-    };
+    );
 
-    fetchEvents();
+    // Limpieza del "listener" cuando el componente se desmonte
+    return () => unsubscribe();
   }, []);
+
   return (
     <Box
       mt={2}
@@ -340,8 +383,8 @@ const Bienestar = () => {
               components={{ event: EventInfo }}
               eventPropGetter={(event) => ({
                 style: {
-                  backgroundColor: event.color || "#1976d2",
-                  borderColor: event.color || "#1976d2",
+                  backgroundColor: event.todo?.color || "#1976d2", // Accedemos a event.todo.color
+                  borderColor: event.todo?.color || "#1976d2", // Accedemos a event.todo.color
                 },
               })}
               style={{ height: 900 }}

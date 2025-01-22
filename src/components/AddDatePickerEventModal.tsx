@@ -58,7 +58,7 @@ const AddDatePickerEventModal = ({
     }));
   };
 
-  const handleTodoChange = (e: React.SyntheticEvent, value: ITodo | null) => {
+  const handleTodoChange = (_e: React.SyntheticEvent, value: ITodo | null) => {
     setDatePickerEventFormData((prevState) => ({
       ...prevState,
       todoId: value?._id,
@@ -109,7 +109,7 @@ const AddDatePickerEventModal = ({
                     start: new Date(newValue!),
                   }))
                 }
-                renderInput={(params) => <TextField {...params} />}
+                // renderInput={(params) => <TextField {...params} />}
               />
             </Box>
 
@@ -133,7 +133,7 @@ const AddDatePickerEventModal = ({
                   end: new Date(newValue!),
                 }))
               }
-              renderInput={(params) => <TextField {...params} />}
+              // renderInput={(params) => <TextField {...params} />}
             />
           </LocalizationProvider>
           <Autocomplete
