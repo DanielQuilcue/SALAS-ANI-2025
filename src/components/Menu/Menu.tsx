@@ -82,13 +82,13 @@ export default function Menu() {
             component={Link}
             to="/bienestar"
           />
-          <BottomNavigationAction
+          {/* <BottomNavigationAction
             label="Ver Salas"
             value="/Versalas"
             icon={<BedroomBabyIcon />}
             component={Link}
             to="/ver-salas"
-          />
+          /> */}
         </BottomNavigation>
       </Paper>
     </Box>

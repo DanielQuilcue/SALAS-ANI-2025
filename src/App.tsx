@@ -7,11 +7,27 @@ import Main from "./pages/Main";
 import Sala25 from "./pages/Sala-2-5";
 import Menu from "./components/Menu/Menu";
 import VerSalas from "./pages/VerSalas";
+import { useEffect } from "react";
 
 function App() {
   const [location] = useLocation();
 
-  // Define rutas donde el Header y el Menu no deben aparecer
+  useEffect(() => {
+    const rootElement = document.getElementById("root");
+    if (!rootElement) return;
+
+    // Mapa de colores según la ruta
+    const routeColors: Record<string, string> = {
+      "/": "#f5f5f5",
+      "/auditorio": "#7f7f7f",
+      "/sala24": "#0070c0",
+      "/sala25": "#ff6600",
+      "/bienestar": "#00b050",
+    };
+
+    rootElement.style.backgroundColor = routeColors[location] || "#f5f5f5";
+  }, [location]);
+
   const isStandalonePage = location === "/ver-salas";
 
   return (
