@@ -244,7 +244,7 @@ const Sala25 = () => {
             confirmButtonText: "OK",
           }).then(() => {
             // Recarga la página después de que se cierre la alerta
-            window.location.reload();
+            console.log("eliminado");
           });
         } catch (error) {
           console.error("Error al eliminar evento en Firebase: ", error);
