@@ -27,8 +27,15 @@ import moment from "moment";
 
 import "moment-timezone"; // or 'moment-timezone/builds/moment-timezone-with-data[-datarange].js'. See their docs
 import { db } from "../firebase/firebaseConfig";
-import { collection, addDoc, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  onSnapshot,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 import { generateId } from "../utils/inde";
+import Swal from "sweetalert2";
 moment.tz.setDefault("America/New_York");
 
 const locales = momentLocalizer(moment); // or globalizeLocalizer
@@ -132,6 +139,8 @@ const Bienestar = () => {
     null
   );
 
+  // tipos de alerta
+
   const [eventInfoModal, setEventInfoModal] = useState(false);
 
   const [events, setEvents] = useState<IEventInfo[]>([]);
@@ -174,28 +183,36 @@ const Bienestar = () => {
       end: currentEvent?.end,
       todoId: eventFormData.todoId || "", // Si todoId es undefined, asignamos null
       room: "Bienestar",
-      //color: eventFormData.color || "", // Obtener el color del todo seleccionado
       todo: eventFormData.todo,
     };
 
-    // const newEvents = [...events, data];
-    // console.log(data);
     try {
-      // Crear el objeto de evento para enviar a Firebase
-      // const newEvent = [...events, data];
-
       // Agregar el nuevo evento a Firestore
       await addDoc(collection(db, "salas"), data);
 
-      alert("Evento agregado exitosamente");
+      // Mostrar alerta de éxito usando SweetAlert2
+      Swal.fire({
+        title: "Evento creado",
+        text: "La reunión se creó exitosamente.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+
+      // Actualizar el estado local con el nuevo evento
+      setEvents([...events, data]);
+      handleClose();
     } catch (error) {
       console.error("Error al agregar evento a Firebase: ", error);
+
+      // Mostrar alerta de error usando SweetAlert2
+      Swal.fire({
+        title: "Error",
+        text: "Hubo un problema al crear la reunión.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     }
-
-    setEvents([...events, data]);
-    handleClose();
   };
-
   // const onAddEventFromDatePicker = (e: MouseEvent<HTMLButtonElement>) => {
   //   e.preventDefault();
 
@@ -263,10 +280,55 @@ const Bienestar = () => {
     setDatePickerEventFormData(initialDatePickerEventFormData);
   };
 
-  const onDeleteEvent = () => {
-    setEvents(() =>
-      [...events].filter((e) => e._id !== (currentEvent as IEventInfo)._id!)
-    );
+  const onDeleteEvent = async () => {
+    const eventToDelete = currentEvent as IEventInfo;
+
+    // Mostrar alerta de confirmación
+    Swal.fire({
+      title: "¿Está seguro de que desea eliminar la reunión?",
+      text: "¡No podrás revertir esto!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminarla",
+      cancelButtonText: "Cancelar",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const eventDocRef = doc(db, "salas", eventToDelete._id);
+          await deleteDoc(eventDocRef);
+
+          setEvents((prevEvents) =>
+            prevEvents.filter((e) => e._id !== eventToDelete._id)
+          );
+
+          console.log("Evento eliminado exitosamente");
+
+          // Mostrar alerta de éxito
+          Swal.fire({
+            title: "¡Eliminado!",
+            text: "Reunión eliminada exitosamente.",
+            icon: "success",
+            confirmButtonText: "OK",
+          }).then(() => {
+            // Recarga la página después de que se cierre la alerta
+            window.location.reload();
+          });
+        } catch (error) {
+          console.error("Error al eliminar evento en Firebase: ", error);
+
+          // Mostrar alerta de error
+          Swal.fire({
+            title: "Error",
+            text: "Hubo un problema al eliminar la reunión.",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        }
+      }
+    });
+
     setEventInfoModal(false);
   };
 
@@ -279,7 +341,8 @@ const Bienestar = () => {
           const data = doc.data();
           if (data.room === "Bienestar") {
             fetchedEvents.push({
-              _id: data._id || "",
+              // _id: data._id || "",
+              _id: doc.id || "",
               meeting: data.meeting || "Sin título",
               people: data.people || "Desconocido",
               room: data.room,

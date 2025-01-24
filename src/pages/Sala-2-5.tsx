@@ -27,8 +27,15 @@ import moment from "moment";
 
 import "moment-timezone"; // or 'moment-timezone/builds/moment-timezone-with-data[-datarange].js'. See their docs
 import { generateId } from "../utils/inde";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+} from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
+import Swal from "sweetalert2";
 
 moment.tz.setDefault("America/New_York");
 
@@ -173,27 +180,87 @@ const Sala25 = () => {
       start: currentEvent?.start,
       end: currentEvent?.end,
       todoId: eventFormData.todoId || "", // Si todoId es undefined, asignamos null
-      room: "Sala 2-5",
-      color: eventFormData.todo?.color || "", // Obtener el color del todo seleccionado
-      //color: eventFormData.color || "", // Obtener el color del todo seleccionado
+      room: "Salas 2-5",
+      todo: eventFormData.todo,
     };
 
-    // const newEvents = [...events, data];
-    // console.log(data);
     try {
-      // Crear el objeto de evento para enviar a Firebase
-      // const newEvent = [...events, data];
-
       // Agregar el nuevo evento a Firestore
       await addDoc(collection(db, "salas"), data);
 
-      alert("Evento agregado exitosamente");
+      // Mostrar alerta de éxito usando SweetAlert2
+      Swal.fire({
+        title: "Evento creado",
+        text: "La reunión se creó exitosamente.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+
+      // Actualizar el estado local con el nuevo evento
+      setEvents([...events, data]);
+      handleClose();
     } catch (error) {
       console.error("Error al agregar evento a Firebase: ", error);
-    }
 
-    setEvents([...events, data]);
-    handleClose();
+      // Mostrar alerta de error usando SweetAlert2
+      Swal.fire({
+        title: "Error",
+        text: "Hubo un problema al crear la reunión.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+  const onDeleteEvent = async () => {
+    const eventToDelete = currentEvent as IEventInfo;
+
+    // Mostrar alerta de confirmación
+    Swal.fire({
+      title: "¿Está seguro de que desea eliminar la reunión?",
+      text: "¡No podrás revertir esto!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminarla",
+      cancelButtonText: "Cancelar",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const eventDocRef = doc(db, "salas", eventToDelete._id);
+          await deleteDoc(eventDocRef);
+
+          setEvents((prevEvents) =>
+            prevEvents.filter((e) => e._id !== eventToDelete._id)
+          );
+
+          console.log("Evento eliminado exitosamente");
+
+          // Mostrar alerta de éxito
+          Swal.fire({
+            title: "¡Eliminado!",
+            text: "Reunión eliminada exitosamente.",
+            icon: "success",
+            confirmButtonText: "OK",
+          }).then(() => {
+            // Recarga la página después de que se cierre la alerta
+            window.location.reload();
+          });
+        } catch (error) {
+          console.error("Error al eliminar evento en Firebase: ", error);
+
+          // Mostrar alerta de error
+          Swal.fire({
+            title: "Error",
+            text: "Hubo un problema al eliminar la reunión.",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        }
+      }
+    });
+
+    setEventInfoModal(false);
   };
 
   const onAddEventFromDatePicker = (e: MouseEvent<HTMLButtonElement>) => {
@@ -235,13 +302,6 @@ const Sala25 = () => {
     setDatePickerEventFormData(initialDatePickerEventFormData);
   };
 
-  const onDeleteEvent = () => {
-    setEvents(() =>
-      [...events].filter((e) => e._id !== (currentEvent as IEventInfo)._id!)
-    );
-    setEventInfoModal(false);
-  };
-
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -251,7 +311,7 @@ const Sala25 = () => {
           const data = doc.data();
           if (data.room === "Sala 2-5") {
             fetchedEvents.push({
-              _id: data._id || "", // Asegúrate de que `_id` siempre tenga un valor
+              _id: doc.id || "",
               meeting: data.meeting || "Sin título", // Valor predeterminado para `meeting`
               people: data.people || "Desconocido", // Valor predeterminado para `people`
               room: data.room, // Campo `room` ya validado

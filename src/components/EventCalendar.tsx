@@ -1,20 +1,15 @@
 import { useState, MouseEvent, useEffect } from "react";
 import { Box, Card, CardContent, CardHeader, Container } from "@mui/material";
-
 import {
   Calendar,
   type Event,
   dateFnsLocalizer,
   momentLocalizer,
 } from "react-big-calendar";
-
 import format from "date-fns/format";
 import parse from "date-fns/parse";
 import startOfWeek from "date-fns/startOfWeek";
 import getDay from "date-fns/getDay";
-// import { es } from "date-fns/locale";
-// import enUS from "date-fns/locale/en-US";
-
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 import EventInfo from "./EventInfo";
@@ -23,26 +18,23 @@ import EventInfoModal from "./EventInfoModal";
 import { AddTodoModal } from "./AddTodoModal";
 import AddDatePickerEventModal from "./AddDatePickerEventModal";
 import moment from "moment";
-// import { Today } from "@mui/icons-material";
 
 import "moment-timezone"; // or 'moment-timezone/builds/moment-timezone-with-data[-datarange].js'. See their docs
 
 import { db } from "../firebase/firebaseConfig";
-import { collection, addDoc, onSnapshot } from "firebase/firestore";
-
-// import { useLocation } from "wouter";
+import {
+  collection,
+  addDoc,
+  onSnapshot,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 import { generateId } from "../utils/inde";
+import Swal from "sweetalert2";
 
 moment.tz.setDefault("America/New_York");
 
-const locales = momentLocalizer(moment); // or globalizeLocalizer
-
-// const locales = {
-//   // "en-US": enUS,
-//   "es-CO": es,
-// };
-
-// const locales = moment.locale();
+const locales = momentLocalizer(moment);
 
 const localizer = dateFnsLocalizer({
   format,
@@ -60,13 +52,10 @@ export interface ITodo {
 
 export interface IEventInfo extends Event {
   _id: string;
-  // description: string;
   meeting: string;
   color?: string;
   todoId?: string;
-  todo?: ITodo; // Cambié aquí, ahora es un objeto de tipo ITodo
-
-  // todo?: string;
+  todo?: ITodo;
   people: string;
   start?: Date;
   end?: Date;
@@ -75,7 +64,6 @@ export interface IEventInfo extends Event {
 }
 
 export interface EventFormData {
-  // description: string;
   todoId?: string;
   todo?: ITodo;
   meeting: string;
@@ -88,7 +76,6 @@ export interface EventFormData {
 }
 
 export interface DatePickerEventFormData {
-  // description: string;
   meeting: string;
   people: string;
   vicepresidency: string;
@@ -102,7 +89,6 @@ export interface DatePickerEventFormData {
 }
 
 const initialEventFormState: EventFormData = {
-  // description: "",
   meeting: "",
   todoId: undefined,
   todo: undefined,
@@ -115,7 +101,6 @@ const initialEventFormState: EventFormData = {
 };
 
 const initialDatePickerEventFormData: DatePickerEventFormData = {
-  // description: "",
   meeting: "",
   people: "",
   vicepresidency: "",
@@ -135,8 +120,6 @@ const EventCalendar = () => {
   const [currentEvent, setCurrentEvent] = useState<Event | IEventInfo | null>(
     null
   );
-
-  // const location = useLocation();
 
   const [eventInfoModal, setEventInfoModal] = useState(false);
 
@@ -172,6 +155,7 @@ const EventCalendar = () => {
 
   const onAddEvent = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+
     const data: IEventInfo = {
       ...eventFormData,
       _id: generateId(),
@@ -179,27 +163,36 @@ const EventCalendar = () => {
       end: currentEvent?.end,
       todoId: eventFormData.todoId || "", // Si todoId es undefined, asignamos null
       room: "Auditorio",
-      //color: eventFormData.color || "", // Obtener el color del todo seleccionado
-      todo: eventFormData.todo, // Aquí asignamos el objeto completo todo.
+      todo: eventFormData.todo,
     };
 
-    console.log(data);
     try {
+      // Agregar el nuevo evento a Firestore
       await addDoc(collection(db, "salas"), data);
 
-      alert("Evento agregado exitosamente");
+      // Mostrar alerta de éxito usando SweetAlert2
+      Swal.fire({
+        title: "Evento creado",
+        text: "La reunión se creó exitosamente.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+
+      // Actualizar el estado local con el nuevo evento
+      setEvents([...events, data]);
+      handleClose();
     } catch (error) {
       console.error("Error al agregar evento a Firebase: ", error);
+
+      // Mostrar alerta de error usando SweetAlert2
+      Swal.fire({
+        title: "Error",
+        text: "Hubo un problema al crear la reunión.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     }
-
-    setEvents([...events, data]);
-    handleClose();
   };
-
-  // const setMinToZero = (date: Date) => {
-  //   date.setSeconds(0);
-  //   return date;
-  // };
 
   const onAddEventFromDatePicker = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -209,9 +202,9 @@ const EventCalendar = () => {
       hours: number
     ): Date | undefined => {
       if (date) {
-        const newDate = new Date(date); // Crear una nueva instancia de Date
+        const newDate = new Date(date);
         newDate.setHours(newDate.getHours() + hours);
-        return newDate; // Retornar el nuevo objeto Date
+        return newDate;
       }
       return undefined;
     };
@@ -220,24 +213,6 @@ const EventCalendar = () => {
       date.setSeconds(0);
       return date;
     };
-
-    // const onAddEventFromDatePicker = (e: MouseEvent<HTMLButtonElement>) => {
-    //   e.preventDefault();
-
-    //   const data: IEventInfo = {
-    //     ...datePickerEventFormData,
-    //     _id: generateId(),
-    //     start: datePickerEventFormData.start ? setMinToZero(new Date(datePickerEventFormData.start)) : undefined,
-    //     end: datePickerEventFormData.allDay
-    //       ? addHours(datePickerEventFormData.start, 12)  // Aquí ya retorna un Date, no un número
-    //       : datePickerEventFormData.end ? setMinToZero(new Date(datePickerEventFormData.end)) : undefined,
-    //   };
-
-    //   const newEvents = [...events, data];
-
-    //   setEvents(newEvents);
-    //   setDatePickerEventFormData(initialDatePickerEventFormData);
-    // };
 
     const data: IEventInfo = {
       ...datePickerEventFormData,
@@ -259,93 +234,56 @@ const EventCalendar = () => {
   };
 
   const onDeleteEvent = async () => {
-    setEvents((prevEvents) =>
-      prevEvents.filter(
-        (e) => e.todoId !== (currentEvent as IEventInfo).todoId!
-      )
-    );
+    const eventToDelete = currentEvent as IEventInfo;
 
-    // const docRef = doc(db, "salas", (currentEvent as IEventInfo).todoId!);
-    // console.log("Documento a eliminar:", docRef);
+    // Mostrar alerta de confirmación
+    Swal.fire({
+      title: "¿Está seguro de que desea eliminar la reunión?",
+      text: "¡No podrás revertir esto!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminarla",
+      cancelButtonText: "Cancelar",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const eventDocRef = doc(db, "salas", eventToDelete._id);
+          await deleteDoc(eventDocRef);
 
-    // try {
-    //   // Asegúrate de que la llamada a deleteDoc esté ejecutándose
-    //   await deleteDoc(docRef);
+          setEvents((prevEvents) =>
+            prevEvents.filter((e) => e._id !== eventToDelete._id)
+          );
 
-    //   console.log(docRef, "Documento eliminado correctamente!");
-    // } catch (error) {
-    //   console.error("Error al eliminar documento:", error);
-    // }
+          console.log("Evento eliminado exitosamente");
+
+          // Mostrar alerta de éxito
+          Swal.fire({
+            title: "¡Eliminado!",
+            text: "Reunión eliminada exitosamente.",
+            icon: "success",
+            confirmButtonText: "OK",
+          }).then(() => {
+            // Recarga la página después de que se cierre la alerta
+            window.location.reload();
+          });
+        } catch (error) {
+          console.error("Error al eliminar evento en Firebase: ", error);
+
+          // Mostrar alerta de error
+          Swal.fire({
+            title: "Error",
+            text: "Hubo un problema al eliminar la reunión.",
+            icon: "error",
+            confirmButtonText: "OK",
+          });
+        }
+      }
+    });
 
     setEventInfoModal(false);
   };
-
-  // const onDeleteEvent = async (documentId: string) => {
-  //   try {
-  //     const docRef = doc(db, "salas", documentId); // Replace "yourCollectionName" with your actual collection name
-  //     await deleteDoc(docRef);
-  //     console.log("Document deleted successfully!");
-  //   } catch (error) {
-  //     console.error("Error deleting document:", error);
-  //   }
-  // };
-
-  // Dentro de tu componente
-  // const onDeleteEvent = async () => {
-  //   // Asegúrate de que currentEvent tenga la propiedad _id
-  //   if (currentEvent && (currentEvent as IEventInfo)._id!) {
-  //     const eventId = (currentEvent as IEventInfo)._id; // Usar el _id del evento
-
-  //     try {
-  //       // Obtén la referencia al documento de Firestore usando el _id
-  //       const eventRef = doc(db, "salas", eventId); // Aquí se usa el _id del evento
-
-  //       console.log(eventRef);
-  //       // Elimina el documento de Firestore
-  //       await deleteDoc(eventRef);
-  //       console.log("Evento eliminado correctamente");
-
-  //       // Elimina el evento de la lista local de eventos
-  //       setEvents((prevEvents) => prevEvents.filter((e) => e._id !== eventId));
-
-  //       // Cierra el modal de información del evento
-  //       setEventInfoModal(false);
-  //     } catch (error) {
-  //       console.error("Error al eliminar evento: ", error);
-  //     }
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const fetchEvents = async () => {
-  //     try {
-  //       const querySnapshot = await getDocs(collection(db, "salas"));
-  //       const fetchedEvents: IEventInfo[] = [];
-  //       querySnapshot.forEach((doc) => {
-  //         const data = doc.data();
-  //         if (data.room === "Auditorio") {
-  //           fetchedEvents.push({
-  //             _id: data._id || "", // Asegúrate de que `_id` siempre tenga un valor
-  //             meeting: data.meeting || "Sin título", // Valor predeterminado para `meeting`
-  //             people: data.people || "Desconocido", // Valor predeterminado para `people`
-  //             room: data.room, // Campo `room` ya validado
-  //             vicepresidency: data.vicepresidency || "Sin vicepresidencia", // Valor predeterminado
-  //             start: data.start?.toDate() || new Date(), // Convierte a Date o usa la fecha actual
-  //             end: data.end?.toDate() || new Date(), // Convierte a Date o usa la fecha actual
-  //             color: data.color || "#1976d2", // Valor predeterminado para color
-  //             todo: data.todo || "Sin tarea", // Valor predeterminado para `todo`
-  //             todoId: data.todoId || "", // Valor predeterminado para `todoId`
-  //           });
-  //         }
-  //       });
-  //       setEvents(fetchedEvents);
-  //     } catch (error) {
-  //       console.error("Error al obtener eventos: ", error);
-  //     }
-  //   };
-
-  //   fetchEvents();
-  // }, []);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -356,7 +294,9 @@ const EventCalendar = () => {
           const data = doc.data();
           if (data.room === "Auditorio") {
             fetchedEvents.push({
-              _id: data._id || "",
+              // _id: data._id || "",
+              _id: doc.id || "",
+
               meeting: data.meeting || "Sin título",
               people: data.people || "Desconocido",
               room: data.room,
@@ -376,7 +316,6 @@ const EventCalendar = () => {
       }
     );
 
-    // Limpieza del "listener" cuando el componente se desmonte
     return () => unsubscribe();
   }, []);
 
@@ -392,37 +331,8 @@ const EventCalendar = () => {
     >
       <Container maxWidth={false}>
         <Card>
-          {/* <CardHeader title="AUDITORIO" subheader="Texto motivacional" /> */}
           <CardHeader title="AUDITORIO" />
-
-          {/* <Divider /> */}
-
-          {/* <Divider /> */}
           <CardContent>
-            {/* <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <ButtonGroup
-                size="large"
-                variant="contained"
-                aria-label="outlined primary button group"
-              >
-                <Button
-                  onClick={() => setOpenDatepickerModal(true)}
-                  size="small"
-                  variant="contained"
-                  sx={{ marginRight: 1 }} // Agrega espacio entre botones
-                >
-                  Reunion Rapida
-                </Button>
-                <Button
-                  onClick={() => setOpenTodoModal(true)}
-                  size="small"
-                  variant="contained"
-                >
-                  Crear Categoria{" "}
-                </Button>
-              </ButtonGroup>
-            </Box> */}
-            {/* <Divider style={{ margin: 10 }} /> */}
             <AddEventModal
               open={openSlot}
               handleClose={handleClose}
