@@ -41,7 +41,13 @@ export default function CardMain() {
     <Grid
       container
       spacing={{ xs: 2, sm: 8, md: 12 }}
-      sx={{ display: "flex", justifyContent: "center", mt: 1 }}
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        mt: 1,
+        maxHeight: "100vh",
+        overflowY: "auto",
+      }}
     >
       {data.map((item) => {
         // Validar si start y end están definidos antes de usarlos
