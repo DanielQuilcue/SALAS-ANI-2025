@@ -318,7 +318,7 @@ const Sala25 = () => {
               vicepresidency: data.vicepresidency || "Sin vicepresidencia", // Valor predeterminado
               start: data.start?.toDate() || new Date(), // Convierte a Date o usa la fecha actual
               end: data.end?.toDate() || new Date(), // Convierte a Date o usa la fecha actual
-              color: data.color || "#1976d2", // Valor predeterminado para color
+              color: data.todo.color || "#1976d2",
               todo: data.todo || "Sin tarea", // Valor predeterminado para `todo`
               todoId: data.todoId || "", // Valor predeterminado para `todoId`
             });

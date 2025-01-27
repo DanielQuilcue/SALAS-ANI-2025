@@ -70,6 +70,7 @@ export interface EventFormData {
   people: string;
   vicepresidency: string;
   room: string;
+  isDoubleMeeting?: string;
   color: string;
   start?: Date;
   end?: Date;
@@ -95,6 +96,7 @@ const initialEventFormState: EventFormData = {
   people: "",
   vicepresidency: "",
   room: "",
+  isDoubleMeeting: undefined,
   color: "",
   start: undefined,
   end: undefined,

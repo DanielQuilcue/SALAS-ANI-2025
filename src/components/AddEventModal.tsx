@@ -4,7 +4,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Button,
   Autocomplete,
@@ -14,8 +13,13 @@ import {
   FormControl,
   Select,
   SelectChangeEvent,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+  FormLabel,
 } from "@mui/material";
 import { EventFormData, ITodo } from "./EventCalendar";
+import { useLocation } from "wouter";
 
 interface IProps {
   open: boolean;
@@ -54,19 +58,24 @@ const AddEventModal = ({
   const handleTodoChange = (value: ITodo | null) => {
     setEventFormData((prevState) => ({
       ...prevState,
-      todo: value ?? undefined, // Usar undefined en lugar de null
-      todoId: value?._id || "", // Puedes seguir guardando el todoId si lo necesitas
+      todo: value ?? undefined,
+      todoId: value?._id || "",
     }));
   };
+
+  const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setEventFormData((prevState) => ({
+      ...prevState,
+      [event.target.name]: event.target.checked,
+    }));
+  };
+
+  const [location] = useLocation();
 
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Crear Reunión</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          {/* To add a event, please fill in the information below. */}
-          {/* Para agregar un evento, complete la siguiente información. */}
-        </DialogContentText>
         <Box component="form">
           <TextField
             name="meeting"
@@ -129,26 +138,43 @@ const AddEventModal = ({
               <MenuItem value="Sindicato - SÉANI">Sindicato (SÉANI)</MenuItem>
             </Select>
           </FormControl>
+
           <Autocomplete
             onChange={(_event, value) => handleTodoChange(value)}
             disablePortal
             id="combo-box-demo"
             options={todos}
-            sx={{ marginTop: 4 }}
+            sx={{ marginTop: 2 }}
             getOptionLabel={(option) => option.title}
             renderInput={(params) => (
               <TextField {...params} label="Tipo reunión" />
             )}
           />
 
-          {/* <Autocomplete
-            onChange={handleTodoChange}
-            options={defaultTodos}
-            getOptionLabel={(option) => option.title}
-            renderInput={(params) => (
-              <TextField {...params} label="Tipo reunión" />
-            )}
-          /> */}
+          {location === "/sala24" && (
+            <FormControl
+              component="fieldset"
+              fullWidth
+              margin="dense"
+              sx={{ mt: 2 }}
+            >
+              <FormLabel component="legend">Reunión doble</FormLabel>
+              <FormGroup aria-label="position" row>
+                <FormControlLabel
+                  value="si"
+                  control={
+                    <Checkbox
+                      // checked={isDoubleMeeting}
+                      onChange={handleCheckboxChange}
+                      name="isDoubleMeeting"
+                    />
+                  }
+                  label="Si"
+                  labelPlacement="end"
+                />
+              </FormGroup>
+            </FormControl>
+          )}
         </Box>
       </DialogContent>
       <DialogActions>

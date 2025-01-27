@@ -66,7 +66,7 @@ export default function CardMain() {
             sx={{
               mx: 1,
               mt: 1,
-              width: 370,
+              width: { xs: "85%", sm: 350 },
               backgroundColor: getCardColor(item.room),
             }}
           >
@@ -101,7 +101,7 @@ export default function CardMain() {
             <CardActions
               sx={{
                 mx: "auto",
-                width: 370,
+                width: 350,
                 justifyContent: "space-between",
               }}
             >
