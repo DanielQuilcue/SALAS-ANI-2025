@@ -61,6 +61,7 @@ export interface IEventInfo extends Event {
   end?: Date;
   room: string;
   vicepresidency: string;
+  isDoubleMeeting?: string;
 }
 
 export interface EventFormData {
@@ -87,6 +88,7 @@ export interface DatePickerEventFormData {
   allDay: boolean;
   start?: Date;
   end?: Date;
+  isDoubleMeeting?: string;
 }
 
 const initialEventFormState: EventFormData = {
@@ -96,7 +98,7 @@ const initialEventFormState: EventFormData = {
   people: "",
   vicepresidency: "",
   room: "",
-  isDoubleMeeting: undefined,
+  isDoubleMeeting: "",
   color: "",
   start: undefined,
   end: undefined,
@@ -166,6 +168,7 @@ const EventCalendar = () => {
       todoId: eventFormData.todoId || "", // Si todoId es undefined, asignamos null
       room: "Auditorio",
       todo: eventFormData.todo,
+      isDoubleMeeting: "",
     };
 
     try {
@@ -299,7 +302,6 @@ const EventCalendar = () => {
             fetchedEvents.push({
               // _id: data._id || "",
               _id: doc.id || "",
-
               meeting: data.meeting || "Sin título",
               people: data.people || "Desconocido",
               room: data.room,
