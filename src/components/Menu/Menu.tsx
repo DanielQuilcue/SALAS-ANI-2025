@@ -21,79 +21,82 @@ export default function Menu() {
   }, [location]);
 
   return (
-    <Box
-      sx={{
-        position: "fixed",
-        transform: "translateZ(0px)",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: (theme) => theme.zIndex.drawer + 2,
-      }}
-    >
-      <Paper
+    <>
+      {/* Padding en la parte inferior para evitar solapamiento */}
+
+      <Box
         sx={{
-          width: 500,
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: (theme) => theme.zIndex.drawer + 2,
         }}
-        elevation={3}
       >
-        <BottomNavigation
-          showLabels
-          value={value}
-          // onChange={(event, newValue) => {
-          //   setValue(newValue);
-          // }}
+        <Paper
+          sx={{
+            width: 500,
+          }}
+          elevation={3}
         >
-          <BottomNavigationAction
-            label="Reservas"
-            value="/"
-            icon={<WindowIcon />}
-            component={Link}
-            to="/"
-          />
-          <BottomNavigationAction
-            label="Auditorio"
-            value="/auditorio"
-            icon={<CameraOutdoorIcon />}
-            component={Link}
-            to="/auditorio"
-          />
-          <BottomNavigationAction
-            label="Sala 2-4"
-            value="/sala24"
-            icon={<FoundationIcon />}
-            component={Link}
-            to="/sala24"
-          />
-          <BottomNavigationAction
-            label="Sala 2-5"
-            value="/sala25"
-            icon={<FoundationIcon />}
-            component={Link}
-            to="/sala25"
-          />
-          <BottomNavigationAction
-            label="Bienestar"
-            value="/bienestar"
-            icon={<BedroomBabyIcon />}
-            component={Link}
-            to="/bienestar"
-          />
-          <BottomNavigationAction
-            label="Ver Salas"
-            value="/Versalas"
-            icon={<BedroomBabyIcon />}
-            component={Link}
-            to="/ver-salas"
-            sx={{
-              display: "none",
-            }}
-          />
-        </BottomNavigation>
-      </Paper>
-    </Box>
+          <BottomNavigation
+            showLabels
+            value={value}
+            // onChange={(event, newValue) => {
+            //   setValue(newValue);
+            // }}
+          >
+            <BottomNavigationAction
+              label="Reservas"
+              value="/"
+              icon={<WindowIcon />}
+              component={Link}
+              to="/"
+            />
+            <BottomNavigationAction
+              label="Auditorio"
+              value="/auditorio"
+              icon={<CameraOutdoorIcon />}
+              component={Link}
+              to="/auditorio"
+            />
+            <BottomNavigationAction
+              label="Sala 2-4"
+              value="/sala24"
+              icon={<FoundationIcon />}
+              component={Link}
+              to="/sala24"
+            />
+            <BottomNavigationAction
+              label="Sala 2-5"
+              value="/sala25"
+              icon={<FoundationIcon />}
+              component={Link}
+              to="/sala25"
+            />
+            <BottomNavigationAction
+              label="Bienestar"
+              value="/bienestar"
+              icon={<BedroomBabyIcon />}
+              component={Link}
+              to="/bienestar"
+            />
+            <BottomNavigationAction
+              label="Ver Salas"
+              value="/Versalas"
+              icon={<BedroomBabyIcon />}
+              component={Link}
+              to="/ver-salas"
+              sx={{
+                display: "none",
+              }}
+            />
+          </BottomNavigation>
+        </Paper>
+      </Box>
+    </>
   );
 }
