@@ -69,6 +69,7 @@ import CardMedia from "@mui/material/CardMedia";
 import Box from "@mui/material/Box";
 import CardMain from "../components/Card/CardMain";
 import Typography from "@mui/joy/Typography";
+import { formattedDate } from "../utils/inde";
 
 export default function VerSalas() {
   return (
@@ -79,7 +80,7 @@ export default function VerSalas() {
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            padding: "0 16px",
+            backgroundColor: "white",
           }}
         >
           <CardMedia
@@ -89,17 +90,24 @@ export default function VerSalas() {
             alt="Logo ANI"
           />
           <Typography
-            level="h3"
-            sx={{ flexGrow: 1, textAlign: "center", color: "white" }}
+            level="h4"
+            sx={{
+              flexGrow: 1,
+              textAlign: "center",
+              color: "black",
+              textTransform: "uppercase",
+            }}
           >
-            SALAS ANI 2025
+            Reservas para: {""}
+            <Typography level="h4" sx={{ color: "#d7723f" }}>
+              {formattedDate}
+            </Typography>
           </Typography>
         </Toolbar>
       </AppBar>
       <Toolbar />
       <Container>
-        <Box sx={{ my: 2 }}>
-          {/* <Reloj /> */}
+        <Box sx={{ my: 3 }}>
           <CardMain />
         </Box>
       </Container>
