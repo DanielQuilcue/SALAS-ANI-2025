@@ -7,37 +7,31 @@ import Calendar from "../../assets/calendar.svg";
 import Avatar from "@mui/joy/Avatar";
 import { Grid } from "@mui/joy";
 import { UseFetchData } from "../../hook/UseFetchData.tsx";
-import { Box, Container, IconButton } from "@mui/material";
+import { Box } from "@mui/material";
 import { useState } from "react";
 import { PacmanLoader } from "react-spinners";
-import Navigation from "../Navigation/Navigation.tsx";
-import {
-  ArrowBackIos,
-  ArrowForwardIos,
-  Today,
-  Home,
-} from "@mui/icons-material";
+import { Today, Home } from "@mui/icons-material";
 
 export default function CardMain() {
   const { data, loading, error } = UseFetchData("salas");
   const [filter, setFilter] = useState<string>("Todos");
   const [fechaSeleccionada, setFechaSeleccionada] = useState<Date>(new Date());
 
-  const handleTabChange = (value: string) => {
-    setFilter(value);
-  };
+  // const handleTabChange = (value: string) => {
+  //   setFilter(value);
+  // };
 
-  const handleDiaAnterior = () => {
-    const nuevaFecha = new Date(fechaSeleccionada);
-    nuevaFecha.setDate(nuevaFecha.getDate() - 1);
-    setFechaSeleccionada(nuevaFecha);
-  };
+  // const handleDiaAnterior = () => {
+  //   const nuevaFecha = new Date(fechaSeleccionada);
+  //   nuevaFecha.setDate(nuevaFecha.getDate() - 1);
+  //   setFechaSeleccionada(nuevaFecha);
+  // };
 
-  const handleDiaSiguiente = () => {
-    const nuevaFecha = new Date(fechaSeleccionada);
-    nuevaFecha.setDate(nuevaFecha.getDate() + 1);
-    setFechaSeleccionada(nuevaFecha);
-  };
+  // const handleDiaSiguiente = () => {
+  //   const nuevaFecha = new Date(fechaSeleccionada);
+  //   nuevaFecha.setDate(nuevaFecha.getDate() + 1);
+  //   setFechaSeleccionada(nuevaFecha);
+  // };
 
   const handleHoy = () => {
     setFechaSeleccionada(new Date());
