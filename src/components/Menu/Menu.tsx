@@ -64,14 +64,14 @@ export default function Menu() {
               to="/auditorio"
             />
             <BottomNavigationAction
-              label="Sala 2-4"
+              label="Sala 1"
               value="/sala24"
               icon={<FoundationIcon />}
               component={Link}
               to="/sala24"
             />
             <BottomNavigationAction
-              label="Sala 2-5"
+              label="Sala 2"
               value="/sala25"
               icon={<FoundationIcon />}
               component={Link}

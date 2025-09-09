@@ -341,7 +341,7 @@ const Sala24 = () => {
     >
       <Container maxWidth={false}>
         <Card>
-          <CardHeader title="Sala 2 - 4" />
+          <CardHeader title="Sala 1" />
           <CardContent>
             <AddEventModal
               open={openSlot}

@@ -345,7 +345,7 @@ const Sala25 = () => {
     >
       <Container maxWidth={false}>
         <Card>
-          <CardHeader title="Sala 2-5" />
+          <CardHeader title="Sala 2" />
 
           {/* <Divider />
           <Menu /> */}

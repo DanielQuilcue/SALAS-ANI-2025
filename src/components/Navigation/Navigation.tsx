@@ -27,8 +27,8 @@ export default function Navigation({ onTabChange }: NavigationProps) {
       <TabsList>
         <Tab value={0}>Todo</Tab>
         <Tab value={1}>Auditorio</Tab>
-        <Tab value={3}>Sala 2-4</Tab>
-        <Tab value={4}>Sala 2-5</Tab>
+        <Tab value={3}>Sala 1</Tab>
+        <Tab value={4}>Sala 2</Tab>
         <Tab value={5}>Bienestar</Tab>
       </TabsList>
     </Tabs>
