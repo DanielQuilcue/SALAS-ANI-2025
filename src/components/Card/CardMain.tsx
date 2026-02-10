@@ -17,22 +17,25 @@ export default function CardMain() {
   const [filter, setFilter] = useState<string>("Todos");
   const [fechaSeleccionada, setFechaSeleccionada] = useState<Date>(new Date());
 
-  // const handleTabChange = (value: string) => {
-  //   setFilter(value);
-  // };
+  // Mapeo de nombres de salas
+  const mapRoomName = (roomName: string): string => {
+    const roomMapping: { [key: string]: string } = {
+      "Sala 2-4": "Sala 1",
+      "Sala 2-5": "Sala 2",
+      Auditorio: "Auditorio",
+      Bienestar: "Bienestar",
+    };
+    return roomMapping[roomName] || roomName;
+  };
 
-  // const handleDiaAnterior = () => {
-  //   const nuevaFecha = new Date(fechaSeleccionada);
-  //   nuevaFecha.setDate(nuevaFecha.getDate() - 1);
-  //   setFechaSeleccionada(nuevaFecha);
-  // };
-
-  // const handleDiaSiguiente = () => {
-  //   const nuevaFecha = new Date(fechaSeleccionada);
-  //   nuevaFecha.setDate(nuevaFecha.getDate() + 1);
-  //   setFechaSeleccionada(nuevaFecha);
-  // };
-
+  // Función para convertir hora a formato 12 horas
+  const formatTo12Hour = (date: Date): string => {
+    return date.toLocaleTimeString("es-ES", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
   const handleHoy = () => {
     setFechaSeleccionada(new Date());
   };
@@ -244,7 +247,6 @@ export default function CardMain() {
           display: "flex",
           justifyContent: "center",
           mt: 1,
-          // Removido maxHeight y overflowY para quitar el scroll
         }}
       >
         {filteredData.length === 0 ? (
@@ -279,7 +281,7 @@ export default function CardMain() {
             >
               {filter === "Todos"
                 ? `No se encontraron reuniones para el ${fechaFormateada}`
-                : `No hay reuniones programadas en ${filter} para esta fecha`}
+                : `No hay reuniones en ${mapRoomName(filter)} para esta fecha`}
             </Typography>
 
             <Box
@@ -325,20 +327,13 @@ export default function CardMain() {
         ) : (
           filteredData.map((item) => {
             const startTime = item.start
-              ? new Date(item.start.seconds * 1000).toLocaleTimeString(
-                  "es-ES",
-                  {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  }
-                )
+              ? formatTo12Hour(new Date(item.start.seconds * 1000))
               : "Hora no disponible";
             const endTime = item.end
-              ? new Date(item.end.seconds * 1000).toLocaleTimeString("es-ES", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
+              ? formatTo12Hour(new Date(item.end.seconds * 1000))
               : "Hora no disponible";
+
+            const mappedRoomName = mapRoomName(item.room);
 
             return (
               <Card
@@ -391,7 +386,8 @@ export default function CardMain() {
                         }}
                       >
                         {/* 📍 {item.room} */}
-                        {item.room}
+                        {/* {item.room} */}
+                        {mappedRoomName}
                       </Button>
                     </Box>
 
