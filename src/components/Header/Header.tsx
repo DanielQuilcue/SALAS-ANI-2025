@@ -19,7 +19,7 @@ function Header() {
   //   null
   // );
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
+    null,
   );
 
   // const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {

@@ -11,7 +11,7 @@ interface NavigationProps {
 export default function Navigation({ onTabChange }: NavigationProps) {
   const handleTabChange = (
     _event: React.SyntheticEvent | null,
-    newValue: number | null
+    newValue: number | null,
   ) => {
     const rooms = ["Todos", "Auditorio", "Sala 2-4", "Sala 2-5", "Bienestar"];
     if (newValue !== null) {
@@ -30,6 +30,7 @@ export default function Navigation({ onTabChange }: NavigationProps) {
         <Tab value={3}>Sala 1</Tab>
         <Tab value={4}>Sala 2</Tab>
         <Tab value={5}>Bienestar</Tab>
+        <Tab value={6}>Descargar</Tab>
       </TabsList>
     </Tabs>
   );
@@ -108,5 +109,5 @@ const TabsList = styled(BaseTabsList)(
   align-items: center;
   place-content: space-between center;
   box-shadow: 0 4px 30px ${theme.palette.mode === "dark" ? grey[900] : grey[200]};
-  `
+  `,
 );

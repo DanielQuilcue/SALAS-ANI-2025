@@ -8,6 +8,7 @@ import Sala25 from "./pages/Sala-2-5";
 import Menu from "./components/Menu/Menu";
 import VerSalas from "./pages/VerSalas";
 import { useEffect } from "react";
+import AdminPage from "./pages/Admin";
 
 function App() {
   const [location] = useLocation();
@@ -43,6 +44,7 @@ function App() {
         <Route path="/sala24" component={Sala24} />
         <Route path="/sala25" component={Sala25} />
         <Route path="/bienestar" component={Bienestar} />
+        <Route path="/admin" component={AdminPage} />
         {/* <Route path="/login" component={SignIn} /> */}
 
         {/* Página standalone */}

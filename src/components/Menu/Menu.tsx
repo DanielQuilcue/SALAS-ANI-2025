@@ -4,6 +4,7 @@ import { useLocation } from "wouter"; // Importar el hook de wouter
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import BedroomBabyIcon from "@mui/icons-material/BedroomBaby";
+import DownloadIcon from "@mui/icons-material/Download";
 import CameraOutdoorIcon from "@mui/icons-material/CameraOutdoor";
 import FoundationIcon from "@mui/icons-material/Foundation";
 import WindowIcon from "@mui/icons-material/Window";
@@ -83,6 +84,13 @@ export default function Menu() {
               icon={<BedroomBabyIcon />}
               component={Link}
               to="/bienestar"
+            />
+            <BottomNavigationAction
+              label="Descarga"
+              value="/admin"
+              icon={<DownloadIcon />}
+              component={Link}
+              to="/admin"
             />
             <BottomNavigationAction
               label="Ver Salas"
